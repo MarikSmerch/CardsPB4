@@ -17,8 +17,7 @@ async def get_avatar_url(user_id, context):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
-    avatar_path = await get_avatar_url(user.id, context)
-    avatar_url = f"https://api.telegram.org/file/bot{TOKEN}/{avatar_path}" if avatar_path else None
+    avatar_url = await get_avatar_url(user.id, context)  # уже готовая ссылка
 
     rq.add_user(user.username, avatar_url)
 
@@ -26,3 +25,4 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("Открыть Web App", web_app=WebAppInfo(url="https://cardspb4.ru"))]
     ])
     await update.message.reply_text("Нажми кнопку, чтобы открыть приложение:", reply_markup=keyboard)
+
