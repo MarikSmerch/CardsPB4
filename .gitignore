@@ -1,0 +1,25 @@
+# Виртуальное окружение
+venv/
+.venv/
+
+# Файл с переменными окружения
+.env
+.env.*
+
+# Кэш и временные файлы Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# VS Code / PyCharm
+.vscode/
+.idea/
+
+# Логи
+*.log
+
+# Системные
+.DS_Store
+Thumbs.db
