@@ -11,7 +11,11 @@ async def get_avatar_url(user_id, context):
     if photos.total_count > 0:
         file_id = photos.photos[0][0].file_id
         file = await context.bot.get_file(file_id)
-        return f"https://api.telegram.org/file/bot{os.getenv('TOKEN')}/{file.file_path}"
+
+        if file.file_path.startswith("https://"):
+            return file.file_path
+        else:
+            return f"https://api.telegram.org/file/bot{os.getenv('TOKEN')}/{file.file_path}"
     return None
 
 
