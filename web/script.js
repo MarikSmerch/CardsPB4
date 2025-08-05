@@ -1,10 +1,17 @@
-if (window.Telegram && window.Telegram.WebApp) {
+window.addEventListener("DOMContentLoaded", () => {
+  const log = (msg) => {
+    document.body.insertAdjacentHTML("beforeend", `<p>${msg}</p>`);
+  };
+
+  log("🧠 Скрипт загружен");
+
+  if (window.Telegram && window.Telegram.WebApp) {
     const tg = window.Telegram.WebApp;
-    tg.ready(); // важно: Telegram начинает инициализацию WebApp
-
-    tg.expand(); // откроет WebApp в полный размер
-
-    document.body.innerHTML += `<p>✅ WebApp активен для ${tg.initDataUnsafe.user?.username || 'неизвестного юзера'}</p>`;
-} else {
-    document.body.innerHTML += "<p>❗ Telegram.WebApp не найден</p>";
-}
+    tg.ready();
+    tg.expand(); 
+    const username = tg.initDataUnsafe?.user?.username || "гость";
+    log(`✅ WebApp активен: ${username}`);
+  } else {
+    log("❗ Telegram.WebApp не найден — ты открыл страницу вне Telegram");
+  }
+});
