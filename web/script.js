@@ -1,21 +1,21 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const debug = document.getElementById("debug");
+const initData = window.Telegram.WebApp.initData;
 
-  const log = (msg) => {
-    const p = document.createElement("p");
-    p.innerText = msg;
-    debug.appendChild(p);
-  };
+fetch("https://cardspb4.ru/api/init", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ initData })
+})
+.then(res => res.json())
+.then(data => {
+  log("📥 Ответ от сервера:");
+  log(JSON.stringify(data, null, 2));
 
-  log("🧠 Скрипт загружен");
-
-  if (window.Telegram && window.Telegram.WebApp) {
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-
-    const username = tg.initDataUnsafe?.user?.username || 'неизвестный';
-    log(`✅ Telegram.WebApp активен. Username: ${username}`);
-  } else {
-    log("❗ Telegram.WebApp не найден — страница открыта вне Telegram WebView");
-  }
+  document.body.innerHTML += `
+    <h2>Привет, ${data.first_name || data.username || "гость"}!</h2>
+    <p>Ваш Telegram ID: ${data.telegram_id}</p>
+  `;
+})
+.catch(err => {
+  log("❌ Ошибка при запросе:");
+  log(err.message);
 });
