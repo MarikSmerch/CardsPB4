@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, HTTPException
 from bot.db import SessionLocal
 from bot.db_requests import get_or_create_user_by_telegram_init_data
 
-router = APIRouter(prefix="/api")
+router = APIRouter()
 
 
 @router.post("/init")
