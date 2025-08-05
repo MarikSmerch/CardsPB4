@@ -1,3 +1,5 @@
+console.log("✅ script.js загружен!");
+
 const log = (text) => {
     const p = document.createElement("p");
     p.innerText = text;
