@@ -3,6 +3,7 @@ from bot.db.models import User
 from sqlalchemy.orm import Session
 from datetime import datetime
 from bot.utils import parse_telegram_init_data
+import json
 
 import os
 
@@ -27,7 +28,7 @@ def get_or_create_user_by_telegram_init_data(db: Session, init_data: str):
     except Exception as e:
         raise ValueError("Неверная подпись или повреждённый initData") from e
 
-    tg_user = data.get("user")
+    tg_user = json.loads(data.get("user"))
     if not tg_user:
         raise ValueError("Пользователь не найден в initData")
 
