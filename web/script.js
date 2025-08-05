@@ -1,12 +1,10 @@
-window.addEventListener("load", () => {
-  console.log("🧠 Скрипт загружен");
+console.log("💥 вне load: скрипт работает");
 
-  try {
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    const username = tg.initDataUnsafe?.user?.username || 'неизвестный';
-    console.log("✅ Telegram.WebApp активен. Username:", username);
-  } catch (e) {
-    console.error("❗ Ошибка в WebApp init:", e);
-  }
-});
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  const username = tg.initDataUnsafe?.user?.username || 'неизвестный';
+  console.log("✅ Telegram.WebApp активен. Username:", username);
+} else {
+  console.log("❗ Telegram.WebApp не найден");
+}
