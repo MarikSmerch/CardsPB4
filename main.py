@@ -3,4 +3,4 @@ from routes import webapp
 
 app = FastAPI()
 
-app.include_router(webapp.router)
+app.include_router(webapp.router, prefix="/api")
