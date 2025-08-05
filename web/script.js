@@ -1,23 +1,12 @@
 window.addEventListener("load", () => {
-  const debug = document.getElementById("debug");
+  console.log("🧠 Скрипт загружен");
 
-  alert("🔥 JS работает!");
-
-  const log = (msg) => {
-    const p = document.createElement("p");
-    p.innerText = msg;
-    debug.appendChild(p);
-  };
-
-  log("🧠 Скрипт загружен");
-
-  if (window.Telegram && window.Telegram.WebApp) {
+  try {
     const tg = window.Telegram.WebApp;
     tg.ready();
-
     const username = tg.initDataUnsafe?.user?.username || 'неизвестный';
-    log(`✅ Telegram.WebApp активен. Username: ${username}`);
-  } else {
-    log("❗ Telegram.WebApp не найден — страница открыта вне Telegram WebView");
+    console.log("✅ Telegram.WebApp активен. Username:", username);
+  } catch (e) {
+    console.error("❗ Ошибка в WebApp init:", e);
   }
 });
