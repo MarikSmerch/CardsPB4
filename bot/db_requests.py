@@ -2,7 +2,7 @@ from bot.db import SessionLocal
 from bot.db.models import User
 from sqlalchemy.orm import Session
 from datetime import datetime
-from telebot.util import check_webapp_signature, parse_webapp_init_data
+from bot.utils import parse_telegram_init_data
 
 import os
 
@@ -23,12 +23,9 @@ def add_user(username, avatar_url):
 
 def get_or_create_user_by_telegram_init_data(db: Session, init_data: str):
     try:
-        data = parse_webapp_init_data(init_data)
+        data = parse_telegram_init_data(init_data)
     except Exception as e:
-        raise ValueError("Ошибка разбора initData") from e
-
-    if not check_webapp_signature(BOT_TOKEN, init_data):
-        raise ValueError("Неверная подпись initData")
+        raise ValueError("Неверная подпись или повреждённый initData") from e
 
     tg_user = data.get("user")
     if not tg_user:
