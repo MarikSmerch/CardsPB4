@@ -1,6 +1,8 @@
 window.addEventListener("load", () => {
   const debug = document.getElementById("debug");
 
+  alert("🔥 JS работает!");
+
   const log = (msg) => {
     const p = document.createElement("p");
     p.innerText = msg;
