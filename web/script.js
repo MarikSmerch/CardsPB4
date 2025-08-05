@@ -1,34 +1,10 @@
-console.log("✅ script.js загружен!");
-
-const log = (text) => {
-    const p = document.createElement("p");
-    p.innerText = text;
-    document.body.appendChild(p);
-};
-
 if (window.Telegram && window.Telegram.WebApp) {
     const tg = window.Telegram.WebApp;
-    log("✅ Telegram.WebApp найден");
+    tg.ready(); // важно: Telegram начинает инициализацию WebApp
 
-    const initData = tg.initData;
-    log("initData: " + initData);
+    tg.expand(); // откроет WebApp в полный размер
 
-    fetch("https://cardspb4.ru/api/init", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ initData })
-    })
-    .then(res => res.json())
-    .then(data => {
-        log("✅ Авторизован как: " + (data.username || data.telegram_id));
-        window.user = data;
-    })
-    .catch(err => {
-        log("❌ Ошибка авторизации: " + err);
-    });
-
+    document.body.innerHTML += `<p>✅ WebApp активен для ${tg.initDataUnsafe.user?.username || 'неизвестного юзера'}</p>`;
 } else {
-    log("❗ Telegram.WebApp не найден — ты открыл страницу вне Telegram");
+    document.body.innerHTML += "<p>❗ Telegram.WebApp не найден</p>";
 }
