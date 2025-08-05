@@ -1,5 +1,5 @@
 from bot.db import SessionLocal
-from db.models import User
+from bot.db.models import User
 from sqlalchemy.orm import Session
 from datetime import datetime
 from telebot.util import check_webapp_signature, parse_webapp_init_data
