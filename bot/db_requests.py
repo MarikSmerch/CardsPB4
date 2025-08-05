@@ -1,4 +1,4 @@
-from db import SessionLocal
+from bot.db import SessionLocal
 from db.models import User
 from sqlalchemy.orm import Session
 from datetime import datetime

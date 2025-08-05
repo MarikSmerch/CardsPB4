@@ -1,3 +1,8 @@
+const log = (msg) => {
+  console.log(msg);
+  document.body.insertAdjacentHTML("beforeend", `<p>${msg}</p>`);
+};
+
 const initData = window.Telegram.WebApp.initData;
 
 fetch("https://cardspb4.ru/api/init", {
