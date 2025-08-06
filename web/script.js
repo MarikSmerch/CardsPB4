@@ -14,7 +14,7 @@ fetch("https://cardspb4.ru/api/init", {
 .then(data => {
   log("📥 Ответ от сервера:");
   log(JSON.stringify(data, null, 2));
-
+  currentTelegramId = data.telegram_id;
   document.body.innerHTML += `
     <h2>Привет, ${data.first_name || data.username || "гость"}!</h2>
     <p>Ваш Telegram ID: ${data.telegram_id}</p>
