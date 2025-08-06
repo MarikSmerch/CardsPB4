@@ -24,6 +24,7 @@ class Card(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     code = Column(String(50), unique=True, nullable=False)
+    activist_id = Column(Integer, nullable=False)
     prize_id = Column(Integer, ForeignKey("prizes.id"))
     activated_by = Column(Integer, ForeignKey("users.id"))
     activated_at = Column(TIMESTAMP)
