@@ -4,13 +4,14 @@ from bot.db import create_all_tables
 from dotenv import load_dotenv
 import os
 
+from bot.handlers import start
+
 load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
 
 
 if __name__ == '__main__':
-    from handlers import start
     create_all_tables()
 
     app = ApplicationBuilder().token(TOKEN).build()
