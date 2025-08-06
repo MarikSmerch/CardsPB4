@@ -23,3 +23,6 @@ __pycache__/
 # Системные
 .DS_Store
 Thumbs.db
+
+codes.py
+codes.txt
