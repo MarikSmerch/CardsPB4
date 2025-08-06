@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo, Update
 from telegram.ext import ContextTypes
-import db_requests as rq
+import bot.db_requests as rq
 import os
 
 TOKEN = os.getenv("TOKEN")
