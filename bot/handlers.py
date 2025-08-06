@@ -21,9 +21,9 @@ async def get_avatar_url(user_id, context):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
-    avatar_url = await get_avatar_url(user.id, context)  # уже готовая ссылка
+    avatar_url = await get_avatar_url(user.id, context)
 
-    rq.add_user(user.username, avatar_url)
+    rq.add_user(user.id, user.username, avatar_url)
 
     keyboard = InlineKeyboardMarkup([
         [InlineKeyboardButton("Открыть Web App", web_app=WebAppInfo(url="https://cardspb4.ru"))]

@@ -10,16 +10,19 @@ import os
 BOT_TOKEN = os.getenv("TOKEN")
 
 
-def add_user(username, avatar_url):
+def add_user(telegram_id, username, avatar_url):
     db = SessionLocal()
-    user = db.query(User).filter_by(username=username).first()
+    user = db.query(User).filter_by(id=telegram_id).first()
+
     if not user:
-        user = User(username=username, avatar_url=avatar_url, created_at=datetime.utcnow())
+        user = User(id=telegram_id, username=username, avatar_url=avatar_url, created_at=datetime.utcnow())
         db.add(user)
     else:
         user.avatar_url = avatar_url
+
     db.commit()
     db.close()
+
 
 
 def get_or_create_user_by_telegram_init_data(db: Session, init_data: str):
