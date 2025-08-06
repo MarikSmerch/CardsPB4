@@ -24,3 +24,36 @@ async def init(request: Request):
         "first_name": user.first_name,
         "last_name": user.last_name,
     }
+
+
+@router.post("/activate")
+async def activate_card(request: Request):
+    data = await request.json()
+    code = data.get("code")
+    telegram_id = data.get("telegram_id")
+
+    if not code or not telegram_id:
+        raise HTTPException(status_code=400, detail="Missing code or telegram_id")
+
+    db = SessionLocal()
+
+    from bot.db.models import Card
+
+    card = db.query(Card).filter_by(code=code).first()
+
+    if not card:
+        db.close()
+        return {"message": "Код не найден."}
+
+    if card.is_activated:
+        db.close()
+        return {"message": "Код уже активирован."}
+
+    card.activated_by = telegram_id
+    card.is_activated = True
+    from datetime import datetime
+    card.activated_at = datetime.utcnow()
+    db.commit()
+    db.close()
+
+    return {"message": "Код успешно активирован! Поздравляем 🎉"}

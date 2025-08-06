@@ -1,12 +1,43 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+  <style>
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  #debug {
+    margin-bottom: 20px;
+  }
+
+  input, button {
+    font-size: 16px;
+    padding: 10px;
+    margin: 5px;
+  }
+
+  #activationResult {
+    margin-top: 10px;
+    font-weight: bold;
+  }
+</style>
   <meta charset="UTF-8">
   <title>Добро пожаловать!</title>
 </head>
 <body>
   <h1>Добро пожаловать!</h1>
   <p>Ты открыл Telegram Web App</p>
+  <div>
+    <h3>Активировать карточку</h3>
+    <input type="text" id="cardCodeInput" placeholder="Введите код карточки" />
+    <button onclick="submitCardCode()">Активировать</button>
+    <p id="activationResult"></p>
+  </div>
   <div id="debug"></div>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
