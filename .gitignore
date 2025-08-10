@@ -30,3 +30,5 @@ codes_with_names.txt
 
 frontend/node_modules
 frontend/dist
+
+web/
