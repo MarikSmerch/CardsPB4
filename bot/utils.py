@@ -1,30 +1,72 @@
+import os
 import hmac
 import hashlib
+import time
+import json
 from urllib.parse import parse_qsl
-import os
+from datetime import datetime
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
+
+from bot.db.models import User
 
 BOT_TOKEN = os.getenv("TOKEN")
 
+INITDATA_TTL_SEC = int(os.getenv("INITDATA_TTL_SEC", "600"))
 
-def parse_telegram_init_data(init_data_str: str):
-    print("DEBUG: raw init_data_str =", init_data_str)
 
-    data = dict(parse_qsl(init_data_str, strict_parsing=True))
-    print("DEBUG: parsed data =", data)
+def verify_telegram_init_data(init_data: str, db: Session) -> User:
+    try:
+        data = dict(parse_qsl(init_data, keep_blank_values=True, strict_parsing=True))
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid initData format")
 
-    hash_ = data.pop("hash", None)
-    check_string = "\n".join([f"{k}={v}" for k, v in sorted(data.items())])
-    print("DEBUG: check_string =", check_string)
+    received_hash = data.pop("hash", None)
+    if not received_hash:
+        raise HTTPException(status_code=400, detail="Missing hash in initData")
 
+    # Формируем data_check_string
+    data_check_string = "\n".join(f"{k}={v}" for k, v in sorted(data.items()))
+
+    # Проверяем подпись по алгоритму Telegram
     secret_key = hashlib.sha256(BOT_TOKEN.encode()).digest()
-    calculated_hash = hmac.new(secret_key, check_string.encode(), hashlib.sha256).hexdigest()
+    computed_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
+    if computed_hash != received_hash:
+        raise HTTPException(status_code=403, detail="Invalid Telegram signature")
 
-    print("DEBUG: calc_hash =", calculated_hash)
-    print("DEBUG: real_hash =", hash_)
+    # TTL по auth_date
+    auth_date = int(data.get("auth_date", "0"))
+    if auth_date <= 0 or time.time() - auth_date > INITDATA_TTL_SEC:
+        raise HTTPException(status_code=403, detail="initData expired")
 
-    # 🔥 закомментируй проверку на время:
-    # if calculated_hash != hash_:
-    #     raise ValueError("Invalid Telegram initData signature")
+    # user — JSON-строка
+    user_json = data.get("user")
+    if not user_json:
+        raise HTTPException(status_code=400, detail="No user in initData")
 
-    return data
+    try:
+        tg_user = json.loads(user_json)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Corrupted user in initData")
 
+    telegram_id = tg_user.get("id")
+    if not telegram_id:
+        raise HTTPException(status_code=400, detail="Missing Telegram user id")
+
+    # читаем/создаём в БД
+    user = db.query(User).filter(User.id == telegram_id).first()
+    if user:
+        return user
+
+    user = User(
+        id=telegram_id,
+        username=tg_user.get("username"),
+        first_name=tg_user.get("first_name"),
+        last_name=tg_user.get("last_name"),
+        avatar_url=None,
+        created_at=datetime.utcnow(),
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user

@@ -1,16 +1,23 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from .base import Base
-from . import models
-import os
+from . import models  # noqa
 from dotenv import load_dotenv
 
 load_dotenv()
 
 DB_URL = os.getenv("DB_URL")
+engine = create_engine(DB_URL, future=True, pool_pre_ping=True)
+SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
 
-engine = create_engine(DB_URL)
-SessionLocal = sessionmaker(bind=engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 def create_all_tables():
