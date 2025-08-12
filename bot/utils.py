@@ -8,9 +8,19 @@ from datetime import datetime
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+
+from dotenv import load_dotenv, find_dotenv
 from bot.db.models import User
 
-BOT_TOKEN = os.getenv("TOKEN")
+load_dotenv(find_dotenv())
+
+
+def _bot_token() -> str:
+    token = os.getenv("TOKEN")
+    if not token:
+        raise HTTPException(status_code=500, detail="Server TOKEN is not set")
+    return token
+
 
 INITDATA_TTL_SEC = int(os.getenv("INITDATA_TTL_SEC", "600"))
 
@@ -29,7 +39,7 @@ def verify_telegram_init_data(init_data: str, db: Session) -> User:
     data_check_string = "\n".join(f"{k}={v}" for k, v in sorted(data.items()))
 
     # Проверяем подпись по алгоритму Telegram
-    secret_key = hashlib.sha256(BOT_TOKEN.encode()).digest()
+    secret_key = hashlib.sha256(_bot_token().encode()).digest()
     computed_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
     if computed_hash != received_hash:
         raise HTTPException(status_code=403, detail="Invalid Telegram signature")
