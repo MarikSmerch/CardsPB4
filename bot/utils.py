@@ -39,7 +39,7 @@ def verify_telegram_init_data(init_data: str, db: Session) -> User:
     data_check_string = "\n".join(f"{k}={v}" for k, v in sorted(data.items()))
 
     # Проверяем подпись по алгоритму Telegram
-    secret_key = hashlib.sha256(_bot_token().encode()).digest()
+    secret_key = hmac.new(b"WebAppData", _bot_token().encode(), hashlib.sha256).digest()
     computed_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
     if computed_hash != received_hash:
         raise HTTPException(status_code=403, detail="Invalid Telegram signature")
