@@ -33,13 +33,16 @@ async function apiInit() {
   return res.json();
 }
 
-async function apiActivateCode(code, telegram_id) {
+async function apiActivateCode(code, initData) {
   const res = await fetch("/api/activate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ code, telegram_id }),
+    body: JSON.stringify({ code, initData }),
   });
-  if (!res.ok) throw new Error("Activation request failed");
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.detail || "Activation request failed");
+  }
   return res.json();
 }
 
@@ -201,7 +204,10 @@ function HomePage({ user }) {
     setLoading(true);
     setStatus(null);
     try {
-      const res = await apiActivateCode(code.trim(), user.telegram_id);
+      const tg = window?.Telegram?.WebApp;
+      const initData = tg?.initData;
+      if (!initData) throw new Error("Открой приложение внутри Telegram");
+      const res = await apiActivateCode(code.trim(), initData);
       setStatus({ type: "ok", text: res?.message || "Готово" });
       setCode("");
     } catch (e) {

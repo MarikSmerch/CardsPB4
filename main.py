@@ -15,7 +15,7 @@ async def lifespan(app: FastAPI):
         print(f"{route.path} — {route.methods}")
     yield
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(webapp.router, prefix="/api")
 
