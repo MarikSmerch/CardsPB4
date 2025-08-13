@@ -25,6 +25,20 @@ def now_utc():
     return datetime.now(timezone.utc)
 
 
+def _normalize_vk_link(vk: str | None) -> str | None:
+    if not vk:
+        return None
+    vk = vk.strip()
+    if not vk:
+        return None
+    # Приводим к виду https://vk.com/<id|username>
+    if vk.startswith("http://"):
+        vk = "https://" + vk[len("http://"):]
+    if vk.startswith("vk.com/"):
+        vk = "https://" + vk
+    return vk
+
+
 def _register_fail(user: User, now: datetime):
     if user.last_failed_at and (now - user.last_failed_at).total_seconds() <= FAIL_WINDOW_SEC:
         user.failed_attempts = (user.failed_attempts or 0) + 1
@@ -197,16 +211,26 @@ def get_profile(initData: str, db: Session = Depends(get_db)):
 
 @router.post("/me", response_model=ProfileOut)
 def update_profile(payload: ProfileUpdateIn, db: Session = Depends(get_db)):
+    # verify_telegram_init_data возвращает User из БД
     user = verify_telegram_init_data(payload.initData, db)
+
+    # 1) Имя/фамилия: чистим пробелы; пустые строки -> NULL
     if payload.first_name is not None:
-        user.first_name = payload.first_name.strip() or None
+        fn = (payload.first_name or "").strip()[:100]
+        user.first_name = fn or None
+
     if payload.last_name is not None:
-        user.last_name = payload.last_name.strip() or None
+        ln = (payload.last_name or "").strip()[:100]
+        user.last_name = ln or None
+
+    # 2) VK: нормализуем к https://vk.com/...; пустое -> NULL
     if payload.vk_link is not None:
-        vk = payload.vk_link.strip()
-        user.vk_link = vk or None
+        user.vk_link = _normalize_vk_link(payload.vk_link)
+
     db.add(user)
     db.commit()
+    db.refresh(user)
+
     return ProfileOut(
         telegram_id=user.id,
         username=user.username,
@@ -214,6 +238,6 @@ def update_profile(payload: ProfileUpdateIn, db: Session = Depends(get_db)):
         last_name=user.last_name,
         vk_link=user.vk_link,
         avatar_url=user.avatar_url,
-        is_banned=bool(user.ban_until and now_utc() < user.ban_until),
-        ban_until=user.ban_until.isoformat() if user.ban_until else None
+        is_banned=bool(getattr(user, "ban_until", None) and now_utc() < user.ban_until),
+        ban_until=user.ban_until.isoformat() if getattr(user, "ban_until", None) else None,
     )

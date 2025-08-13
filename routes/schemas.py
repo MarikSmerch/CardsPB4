@@ -15,9 +15,9 @@ class ActivateIn(BaseModel):
 
 class ProfileUpdateIn(BaseModel):
     initData: str
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    vk_link: Optional[str] = None
+    first_name: Optional[str] = Field(default=None, max_length=100)
+    last_name: Optional[str] = Field(default=None, max_length=100)
+    vk_link: Optional[str] = Field(default=None, max_length=255)
 
 
 # --- Выходы ---
