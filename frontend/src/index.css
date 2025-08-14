@@ -184,3 +184,15 @@ body {
     margin-bottom: 12px 
 }
 .avatar-md { width: 120px; height: 120px; }
+
+.page-container {
+  padding-left: max(env(safe-area-inset-left), 0px);
+  padding-right: max(env(safe-area-inset-right), 0px);
+}
+@media (min-width: 520px) {
+  .page-container {
+    padding-left: calc(16px + max(env(safe-area-inset-left), 0px));
+    padding-right: calc(16px + max(env(safe-area-inset-right), 0px));
+  }
+}
+.page-container { transform: translateZ(0); }
