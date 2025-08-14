@@ -511,7 +511,7 @@ function AboutPage() {
 function WherePage() {
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold">
+      <h1 className="text-2xl font-bold text-center">
         мероприятия, на которых можно получить карточки
       </h1>
 
