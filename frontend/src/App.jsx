@@ -124,7 +124,7 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen font-unbounded" style={{ color: "#1E0028" }}>
+    <div className="min-h-screen font-unbounded app-minh" style={{ color: "#1E0028" }}>
       {/* Top bar */}
       <div className="sticky top-0 z-40 flex items-center gap-3 px-4 py-3 bg-white/60 backdrop-blur shadow"
            style={{ fontWeight: 500 }}>
@@ -251,27 +251,13 @@ export default function App() {
         </div>
 
         {/* Пункты меню */}
-        <nav className="p-3">
-          {Object.entries(PAGES).map(([key, meta]) => {
-            const active = page === key;
-            return (
-              <button
-                key={key}
-                onClick={() => { setPage(key); setSidebarOpen(false); }}
-                className={`w-full text-left px-4 py-4 rounded-2xl mb-2 transition ${
-                  active ? "bg-slate-900 text-white" : "hover:bg-slate-100"
-                }`}
-                style={{ fontWeight: 800, fontSize: "22px", textTransform: "lowercase" }}
-              >
-                {meta.title}
-              </button>
-            );
-          })}
+        <nav className="menu">
+          {Object.entries(PAGES).map(([key, meta]) => (
+            <button key={key} onClick={() => { setPage(key); setSidebarOpen(false); }}>
+              {meta.title}
+            </button>
+          ))}
         </nav>
-
-        <div className="mt-auto p-4 text-xs text-slate-400">
-          © {new Date().getFullYear()} CardsPB4
-        </div>
       </aside>
     </div>
   );
@@ -320,16 +306,16 @@ function HomePage({ user }) {
       </div>
 
       {/* Приветствие */}
-      <div className="font-unbounded-black text-2xl leading-tight mb-4">
+      <div className="font-unbounded-black leading-tight home-hello">
         привет!
       </div>
-      <div className="font-unbounded-black text-xl leading-tight mb-7">
+      <div className="font-unbounded-black leading-tight home-subtitle">
         введи код карточки:
       </div>
 
       {/* Поле ввода */}
       <input
-        className="code-input font-unbounded-medium mb-10"
+        className="code-input font-unbounded-medium home-input"
         value={code}
         onChange={(e) => setCode(e.target.value)}
         placeholder="xxxxx-yyyyy-zzzzz"
@@ -338,7 +324,7 @@ function HomePage({ user }) {
 
       {/* Кнопка */}
       <button
-        className="btn-primary font-unbounded-medium mb-10"
+        className="btn-primary font-unbounded-medium home-button"
         onClick={onActivate}
         disabled={loading}
       >
@@ -346,7 +332,7 @@ function HomePage({ user }) {
       </button>
 
       {/* Описание */}
-      <div className="helper font-inter-black-italic mb-16" style={{opacity:.9, lineHeight: "1.45"}}>
+      <div className="helper font-inter-black-italic home-helper" style={{ opacity: .9 }}>
         данный код находится на карточке<br/>с обратной стороны
         <br/><br/>
         после ввода кода будут добавлены<br/>
@@ -360,8 +346,8 @@ function HomePage({ user }) {
       </div>
 
       {/* Касатка */}
-      <div className="mt-16 flex justify-center">
-        <img src="/logo-orca.png" alt="Касатка" style={{ width: 100, height: "auto" }} />
+      <div className="flex justify-center home-orca">
+        <img src="/logo-orca.png" alt="Касатка" style={{ width: 110, height: "auto" }} />
       </div>
 
       {/* Статус */}
