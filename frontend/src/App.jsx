@@ -73,13 +73,16 @@ export default function App() {
 
   useEffect(() => {
     const tg = getTg();
-    tg?.ready?.();
-    tg?.setHeaderColor?.("#00000000");
-    tg?.setBackgroundColor?.("#00000000");
+
+    try { tg?.ready?.(); } catch {}
+
+    try {
+      tg?.setHeaderColor?.("bg_color");
+      tg?.setBackgroundColor?.("#FFFFFF");
+    } catch {}
 
     (async () => {
       try {
-        // если у тебя есть /api/init:
         const res = await fetch("/api/init", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
