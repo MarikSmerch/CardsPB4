@@ -53,6 +53,9 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [debugOpen, setDebugOpen] = useState(false);
+  const [initDump, setInitDump] = useState("");
+
   useEffect(() => {
     const tg = getTg();
     tg?.ready?.();
@@ -97,20 +100,69 @@ export default function App() {
           <Menu className="w-6 h-6" />
         </button>
         <div className="font-semibold">{PAGES[page]?.title || "Карточки"}</div>
-        <div className="ml-auto">
+
+        <div className="ml-auto space-x-2">
           <button
             className="px-3 py-1.5 text-xs rounded-xl border border-slate-300 hover:bg-slate-100"
             onClick={() => {
-            // Перезагрузка с ?debug=1 (покажет сырой initData на экране)
-            const url = new URL(window.location.href);
-            url.searchParams.set("debug", "1");
-            window.location.href = url.toString();
-          }}
+              const tg = getTg();
+              const id = tg?.initData || "";
+              setInitDump(id);
+              setDebugOpen(true);
+              fetch("/api/_echo_init", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ initData: id }),
+              }).catch(() => {});
+            }}
           >
-            initData (debug)
+            Показать initData
           </button>
         </div>
       </div>
+
+
+      {debugOpen && (
+        <div className="fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setDebugOpen(false)} />
+          <div className="absolute left-1/2 top-10 -translate-x-1/2 w-[92%] max-w-2xl bg-white rounded-2xl shadow-xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="font-semibold">raw initData</div>
+              <div className="space-x-2">
+                <button
+                  className="px-3 py-1.5 text-xs rounded-xl border border-slate-300 hover:bg-slate-100"
+                  onClick={async () => {
+                    try {
+                      if (navigator.clipboard?.writeText) {
+                          await navigator.clipboard.writeText(initDump);
+                      } else {
+                          // Fallback для старых WebView
+                          const ta = document.createElement('textarea');
+                          ta.value = initDump;
+                          document.body.appendChild(ta);
+                          ta.select();
+                          document.execCommand('copy');
+                          document.body.removeChild(ta);
+                      }
+                    } catch {}
+                  }}
+                >
+                  Копировать
+                </button>
+                <button
+                  className="px-3 py-1.5 text-xs rounded-xl border border-slate-300 hover:bg-slate-100"
+                  onClick={() => setDebugOpen(false)}
+                >
+                  Закрыть
+                </button>
+              </div>
+            </div>
+            <pre className="max-h-[60vh] overflow-auto text-xs whitespace-pre-wrap break-all border border-slate-200 rounded-xl p-3 bg-slate-50">
+              {initDump || "(пусто — открой из Telegram WebApp)"}
+            </pre>
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       <div className="px-4 py-5 max-w-xl mx-auto">
