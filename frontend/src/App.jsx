@@ -147,9 +147,7 @@ export default function App() {
       <div className="sticky top-0 z-40 flex items-center gap-3 px-4 py-3 bg-white/60 backdrop-blur shadow"
           style={{ fontWeight: 500 }}>
         <AnimatedHamburger isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-        <div className="font-unbounded-medium">
-          {page === "home" ? "" : (PAGES[page]?.title || "")}
-        </div>
+        <div className="font-unbounded-medium"></div>
       </div>
 
         {/* <div className="ml-auto space-x-2">
@@ -262,18 +260,11 @@ export default function App() {
 
         {/* Пункты меню */}
         <nav className="menu">
-          {Object.entries(PAGES).map(([key]) => {
-            const active = page === key;
-            return (
-              <button
-                key={key}
-                onClick={() => { setPage(key); setSidebarOpen(false); }}
-                className={`w-full py-4 ${active ? "bg-slate-900" : ""}`}
-              >
-                {/* ничего не выводим */}
-              </button>
-            );
-          })}
+          {Object.entries(PAGES).map(([key, meta]) => (
+            <button key={key} onClick={() => { setPage(key); setSidebarOpen(false); }}>
+              {meta.title}
+            </button>
+          ))}
         </nav>
       </aside>
     </div>
