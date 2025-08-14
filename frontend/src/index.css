@@ -11,9 +11,10 @@ html, body, #root {
 }
 body {
   margin: 0;
-  background: linear-gradient( 45deg, #96DEE8, #EABCF5);
+  background: linear-gradient( 45deg, #EABCF5, #96DEE8);
   background-attachment: fixed;
   color: var(--brand-text);
+  overflow-x: hidden; 
 }
 
 /* === Шрифты === */
@@ -25,20 +26,21 @@ body {
 /* === Карточка главного экрана === */
 .baldezh-card {
   width: 100%;
-  max-width: 360px;
+  max-width: 420px;
   margin: 0 auto;
-  padding: 24px 18px 32px;
+  padding: 24px 18px 40px;
   text-align: center;
 }
 
 /* поле ввода под маску XXXXX-YYYYY-ZZZZZ */
 .code-input {
-  width: 100%;
-  height: 44px;
+  width: 92%; 
+  margin: 0 auto;  
+  height: 50px;
   border-radius: 999px;
   border: none;
   outline: none;
-  padding: 0 18px;
+  padding: 0 20px;  
   background: rgba(255,255,255,0.75);
   color: var(--brand-text);
   font-size: 16px;
@@ -98,3 +100,14 @@ body {
 .hero-logo {
   width: 100vw; height: auto; display: block;
 }
+
+.sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0;
+  width: 80%; max-width: 320px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0,0,0,.2);
+  transform: translateX(-100%);
+  transition: transform .25s ease;
+  z-index: 50;
+}
+.sidebar.open { transform: translateX(0); }

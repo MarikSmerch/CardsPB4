@@ -215,66 +215,64 @@ export default function App() {
         )}
       </div>
 
-      {/* Sidebar drawer (без анимационной либы) */}
+      {/* Overlay */}
       {sidebarOpen && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/40 z-40"
-            onClick={() => setSidebarOpen(false)}
-          />
-          <aside id="sidebar"
-            className="fixed left-0 top-0 bottom-0 w-[80%] max-w-[320px] bg-white z-50 shadow-xl"
-            style={{ transform: "translateX(0)" }}
-          >
-            <div className="p-4 border-b flex items-center gap-3">
-              <button
-                className="p-2 rounded-xl hover:bg-slate-100"
-                onClick={() => setSidebarOpen(false)}
-                aria-label="Закрыть меню"
-              >
-                <IconX />
-              </button>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
-                  {user?.avatar_url ? (
-                    <img src={user.avatar_url} alt="avatar" className="w-full h-full object-cover" />
-                  ) : null}
-                </div>
-                <div className="leading-tight">
-                  <div className="font-semibold">
-                    {user?.first_name || user?.username || "Гость"}
-                  </div>
-                  {user?.last_name ? (
-                    <div className="text-slate-500 text-sm">{user.last_name}</div>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-
-            <nav className="p-2">
-              {Object.entries(PAGES).map(([key, meta]) => {
-                const active = page === key;
-                return (
-                  <button
-                    key={key}
-                    onClick={() => { setPage(key); setSidebarOpen(false); }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl mb-2 transition ${
-                      active ? "bg-slate-900 text-white" : "hover:bg-slate-100"
-                    }`}
-                  >
-                    {/* без иконок, только текст */}
-                    <span className="text-base font-medium">{meta.title}</span>
-                  </button>
-                );
-              })}
-            </nav>
-
-            <div className="mt-auto p-4 text-xs text-slate-400">
-              © {new Date().getFullYear()} CardsPB4
-            </div>
-          </aside>
-        </>
+        <div
+          className="fixed inset-0 bg-black/40 z-40"
+          onClick={() => setSidebarOpen(false)}
+        />
       )}
+
+      {/* Sidebar */}
+      <aside
+        id="sidebar"
+        className={`sidebar ${sidebarOpen ? "open" : ""}`}   /* <-- классы из CSS */
+        role="dialog"
+        aria-modal="true"
+      >
+        {/* Шапка сайдбара — по тапу идём в профиль */}
+        <div
+          className="p-4 border-b flex items-center gap-3 cursor-pointer"
+          onClick={() => { setPage("profile"); setSidebarOpen(false); }}
+        >
+          <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+            {user?.avatar_url ? (
+              <img src={user.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+            ) : null}
+          </div>
+          <div className="leading-tight">
+            <div className="font-semibold">
+              {user?.first_name || user?.username || "Гость"}
+            </div>
+            {user?.last_name ? (
+              <div className="text-slate-500 text-sm">{user.last_name}</div>
+            ) : null}
+          </div>
+        </div>
+
+        {/* Пункты меню */}
+        <nav className="p-3">
+          {Object.entries(PAGES).map(([key, meta]) => {
+            const active = page === key;
+            return (
+              <button
+                key={key}
+                onClick={() => { setPage(key); setSidebarOpen(false); }}
+                className={`w-full text-left px-4 py-4 rounded-2xl mb-2 transition ${
+                  active ? "bg-slate-900 text-white" : "hover:bg-slate-100"
+                }`}
+                style={{ fontWeight: 800, fontSize: "22px", textTransform: "lowercase" }}
+              >
+                {meta.title}
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="mt-auto p-4 text-xs text-slate-400">
+          © {new Date().getFullYear()} CardsPB4
+        </div>
+      </aside>
     </div>
   );
 }
@@ -313,7 +311,7 @@ function HomePage({ user }) {
   return (
     <main className="baldezh-card">
       {/* Логотип */}
-      <div className="full-bleed mb-8">
+      <div className="full-bleed mt-2 mb-12">
         <img
           className="hero-logo"
           src="/logo-baldezh.png"
@@ -322,16 +320,16 @@ function HomePage({ user }) {
       </div>
 
       {/* Приветствие */}
-      <div className="font-unbounded-black text-xl mt-6 mb-3">
+      <div className="font-unbounded-black text-2xl leading-tight mb-4">
         привет!
       </div>
-      <div className="font-unbounded-black text-lg mb-6">
+      <div className="font-unbounded-black text-xl leading-tight mb-7">
         введи код карточки:
       </div>
 
       {/* Поле ввода */}
       <input
-        className="code-input font-unbounded-medium mb-5"
+        className="code-input font-unbounded-medium mb-10"
         value={code}
         onChange={(e) => setCode(e.target.value)}
         placeholder="xxxxx-yyyyy-zzzzz"
@@ -340,7 +338,7 @@ function HomePage({ user }) {
 
       {/* Кнопка */}
       <button
-        className="btn-primary font-unbounded-medium mb-8"
+        className="btn-primary font-unbounded-medium mb-10"
         onClick={onActivate}
         disabled={loading}
       >
@@ -348,7 +346,7 @@ function HomePage({ user }) {
       </button>
 
       {/* Описание */}
-      <div className="helper font-inter-black-italic" style={{opacity:.9, lineHeight: "1.45"}}>
+      <div className="helper font-inter-black-italic mb-16" style={{opacity:.9, lineHeight: "1.45"}}>
         данный код находится на карточке<br/>с обратной стороны
         <br/><br/>
         после ввода кода будут добавлены<br/>
