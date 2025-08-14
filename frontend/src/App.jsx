@@ -81,10 +81,17 @@ export default function App() {
     tg?.ready?.();
     tg?.setHeaderColor?.("#00000000");
     tg?.setBackgroundColor?.("#00000000");
+
     (async () => {
       try {
-        const data = await apiInit();
-        setUser(data);
+        // если у тебя есть /api/init:
+        const res = await fetch("/api/init", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ initData: tg?.initData || "" }),
+        });
+        if (res.ok) setUser(await res.json());
+        else throw new Error();
       } catch {
         setError("Не удалось получить данные пользователя");
       } finally {
@@ -104,6 +111,20 @@ export default function App() {
     }
   }, [page, user]);
 
+  // простые встроенные SVG
+  const IconMenu = () => (
+    <svg width="22" height="16" viewBox="0 0 22 16" fill="none" aria-hidden>
+      <rect x="0" y="0" width="22" height="2.5" rx="1.25" fill="#1E0028"/>
+      <rect x="0" y="6.75" width="22" height="2.5" rx="1.25" fill="#1E0028"/>
+      <rect x="0" y="13.5" width="22" height="2.5" rx="1.25" fill="#1E0028"/>
+    </svg>
+  );
+  const IconX = () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M18 6L6 18M6 6l12 12" stroke="#1E0028" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+
   return (
     <div className="min-h-screen font-unbounded" style={{ color: "#1E0028" }}>
       {/* Top bar */}
@@ -114,7 +135,7 @@ export default function App() {
           onClick={() => setSidebarOpen(true)}
           aria-label="Открыть меню"
         >
-          <Menu className="w-6 h-6" color="#1E0028" />
+          <IconMenu />
         </button>
         <div className="font-unbounded-medium">{PAGES[page]?.title || "Карточки"}</div>
 
@@ -126,6 +147,7 @@ export default function App() {
               const id = tg?.initData || "";
               setInitDump(id);
               setDebugOpen(true);
+              // необязательный эхо-запрос
               fetch("/api/_echo_init", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -138,7 +160,7 @@ export default function App() {
         </div>
       </div>
 
-
+      {/* Debug modal */}
       {debugOpen && (
         <div className="fixed inset-0 z-50">
           <div className="absolute inset-0 bg-black/40" onClick={() => setDebugOpen(false)} />
@@ -151,15 +173,14 @@ export default function App() {
                   onClick={async () => {
                     try {
                       if (navigator.clipboard?.writeText) {
-                          await navigator.clipboard.writeText(initDump);
+                        await navigator.clipboard.writeText(initDump);
                       } else {
-                          // Fallback для старых WebView
-                          const ta = document.createElement('textarea');
-                          ta.value = initDump;
-                          document.body.appendChild(ta);
-                          ta.select();
-                          document.execCommand('copy');
-                          document.body.removeChild(ta);
+                        const ta = document.createElement('textarea');
+                        ta.value = initDump;
+                        document.body.appendChild(ta);
+                        ta.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(ta);
                       }
                     } catch {}
                   }}
@@ -192,78 +213,66 @@ export default function App() {
         )}
       </div>
 
-      {/* Sidebar drawer */}
-      <AnimatePresence>
-        {sidebarOpen && (
-          <>
-            <motion.div
-              className="fixed inset-0 bg-black/40 z-40"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSidebarOpen(false)}
-            />
-            <motion.aside
-              className="fixed left-0 top-0 bottom-0 w-[80%] max-w-[320px] bg-white z-50 shadow-xl"
-              initial={{ x: -320 }}
-              animate={{ x: 0 }}
-              exit={{ x: -320 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            >
-              <div className="p-4 border-b flex items-center gap-3">
-                <button
-                  className="p-2 rounded-xl hover:bg-slate-100"
-                  onClick={() => setSidebarOpen(false)}
-                  aria-label="Закрыть меню"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
-                    {user?.avatar_url ? (
-                      <img src={user.avatar_url} alt="avatar" className="w-full h-full object-cover" />
-                    ) : null}
+      {/* Sidebar drawer (без анимационной либы) */}
+      {sidebarOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/40 z-40"
+            onClick={() => setSidebarOpen(false)}
+          />
+          <aside
+            className="fixed left-0 top-0 bottom-0 w-[80%] max-w-[320px] bg-white z-50 shadow-xl"
+            style={{ transform: "translateX(0)" }}
+          >
+            <div className="p-4 border-b flex items-center gap-3">
+              <button
+                className="p-2 rounded-xl hover:bg-slate-100"
+                onClick={() => setSidebarOpen(false)}
+                aria-label="Закрыть меню"
+              >
+                <IconX />
+              </button>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+                  {user?.avatar_url ? (
+                    <img src={user.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+                  ) : null}
+                </div>
+                <div className="leading-tight">
+                  <div className="font-semibold">
+                    {user?.first_name || user?.username || "Гость"}
                   </div>
-                  <div className="leading-tight">
-                    <div className="font-semibold">
-                      {user?.first_name || user?.username || "Гость"}
-                    </div>
-                    {user?.last_name ? (
-                      <div className="text-slate-500 text-sm">{user.last_name}</div>
-                    ) : null}
-                  </div>
+                  {user?.last_name ? (
+                    <div className="text-slate-500 text-sm">{user.last_name}</div>
+                  ) : null}
                 </div>
               </div>
+            </div>
 
-              <nav className="p-2">
-                {Object.entries(PAGES).map(([key, meta]) => {
-                  const Icon = meta.icon;
-                  const active = page === key;
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => {
-                        setPage(key);
-                        setSidebarOpen(false);
-                      }}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl mb-2 transition ${
-                        active ? "bg-slate-900 text-white" : "hover:bg-slate-100"
-                      }`}
-                    >
-                      <Icon className="w-5 h-5" />
-                      <span className="text-base font-medium">{meta.title}</span>
-                    </button>
-                  );
-                })}
-              </nav>
+            <nav className="p-2">
+              {Object.entries(PAGES).map(([key, meta]) => {
+                const active = page === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => { setPage(key); setSidebarOpen(false); }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl mb-2 transition ${
+                      active ? "bg-slate-900 text-white" : "hover:bg-slate-100"
+                    }`}
+                  >
+                    {/* без иконок, только текст */}
+                    <span className="text-base font-medium">{meta.title}</span>
+                  </button>
+                );
+              })}
+            </nav>
 
-              <div className="mt-auto p-4 text-xs text-slate-400">
-                © {new Date().getFullYear()} CardsPB4
-              </div>
-            </motion.aside>
-          </>
-        )}
-      </AnimatePresence>
+            <div className="mt-auto p-4 text-xs text-slate-400">
+              © {new Date().getFullYear()} CardsPB4
+            </div>
+          </aside>
+        </>
+      )}
     </div>
   );
 }
