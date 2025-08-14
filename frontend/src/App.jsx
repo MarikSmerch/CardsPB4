@@ -277,6 +277,14 @@ function HomePage({ user }) {
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const toMessage = (e) => {
+    if (!e) return "Ошибка";
+    if (typeof e === "string") return e;
+    if (typeof e?.message === "string") return e.message;
+    if (typeof e?.detail === "string") return e.detail;
+    try { return JSON.stringify(e); } catch { return String(e); }
+  };
+
   const onActivate = async () => {
     if (!code.trim()) {
       setStatus({ type: "err", text: "Введите код" });
@@ -292,11 +300,12 @@ function HomePage({ user }) {
       const tg = window?.Telegram?.WebApp;
       const initData = tg?.initData;
       if (!initData) throw new Error("Открой приложение внутри Telegram");
+
       const res = await apiActivateCode(code.trim(), initData);
-      setStatus({ type: "ok", text: res?.message || "Готово" });
+      setStatus({ type: "ok", text: toMessage(res?.message || "Готово") });
       setCode("");
     } catch (e) {
-      setStatus({ type: "err", text: e?.message || "Ошибка при активации" });
+      setStatus({ type: "err", text: toMessage(e) || "Ошибка при активации" });
     } finally {
       setLoading(false);
     }
@@ -327,17 +336,17 @@ function HomePage({ user }) {
             <input
               className="code-input font-unbounded-medium home-input"
               value={code}
-              onChange={(e) => setCode(e.target.value)}
+              onChange={(e) => { setCode(e.target.value); if (status) setStatus(null); }}
               placeholder="xxxxx-yyyyy-zzzzz"
               maxLength={17}
             />
 
             {/* Статус */}
-            {status && (
+            {(status?.text ?? "") !== "" && (
               <div
-                className={`status-inline ${status.type === "ok" ? "text-green-700" : "text-red-700"}`}
+                className={`status-inline ${status?.type === "ok" ? "text-green-700" : "text-red-700"}`}
               >
-                {status.text}
+                {String(status.text)}
               </div>
             )}
 
