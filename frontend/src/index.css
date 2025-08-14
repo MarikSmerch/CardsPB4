@@ -8,13 +8,14 @@
 }
 html, body, #root {
   height: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-x: none; 
 }
 body {
   margin: 0;
   background: linear-gradient( 45deg, #EABCF5, #96DEE8);
   background-attachment: fixed;
   color: var(--brand-text);
-  overflow-x: hidden; 
 }
 
 /* === Шрифты === */
@@ -111,9 +112,11 @@ body {
 .full-bleed {
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 .hero-logo {
-  width: 100vw; height: auto; display: block;
+  width: 100vw; max-width: 100%; height: auto; display: block;
 }
 
 .sidebar {
@@ -168,3 +171,11 @@ body {
     margin-bottom: 12px 
 }
 .avatar-md { width: 120px; height: 120px; }
+
+@supports (width: 100svw) {
+  .full-bleed {
+    margin-left: calc(50% - 50svw);
+    margin-right: calc(50% - 50svw);
+  }
+  .hero-logo { width: 100svw; }
+}
