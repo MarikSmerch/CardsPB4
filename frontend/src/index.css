@@ -115,6 +115,21 @@ body {
   margin-left: calc(50% - 50dvw);
   margin-right: calc(50% - 50dvw);
 }
+.full-bleed-outer {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50dvw;
+  margin-right: -50dvw;
+  width: 100dvw;
+}
+@supports (width: 100svw) {
+  .full-bleed-outer {
+    margin-left: -50svw;
+    margin-right: -50svw;
+    width: 100svw;
+  }
+}
 .hero-logo {
   display: block;
   width: 100dvw;
@@ -181,4 +196,14 @@ body {
     margin-right: calc(50% - 50svw);
   }
   .hero-logo { width: 100svw; }
+}
+
+@supports (padding: max(0px)) {
+  .full-bleed, .full-bleed-outer { transform: translateZ(0); } /* устранение субпиксельных артефактов */
+}
+
+.page-container { padding-left: 16px; padding-right: 16px; }
+
+@media (max-width: 520px) {
+  .page-container { padding-left: 0; padding-right: 0; }
 }
