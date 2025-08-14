@@ -157,3 +157,6 @@ body {
 
 
 .app-minh { min-height: 100dvh; }
+
+.avatar-sm { width: 36px; height: 36px; }
+.avatar-md { width: 56px; height: 56px; }
