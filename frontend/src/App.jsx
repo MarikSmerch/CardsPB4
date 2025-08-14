@@ -243,7 +243,7 @@ export default function App() {
           className="p-4 border-b flex items-center gap-3 cursor-pointer"
           onClick={() => { setPage("profile"); setSidebarOpen(false); }}
         >
-          <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+          <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
             {user?.avatar_url ? (
               <img src={user.avatar_url} alt="avatar" className="w-full h-full object-cover" />
             ) : null}
@@ -414,7 +414,7 @@ function ProfilePage({ user, onSaved }) {
     <div className="space-y-5">
       <h1 className="text-2xl font-bold">Профиль</h1>
       <div className="flex items-center gap-4">
-        <div className="w-16 h-16 rounded-full bg-slate-200 overflow-hidden">
+        <div className="w-14 h-14 rounded-full bg-slate-200 overflow-hidden">
           {user?.avatar_url ? (
             <img src={user.avatar_url} alt="avatar" className="w-full h-full object-cover" />
           ) : null}
