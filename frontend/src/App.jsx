@@ -275,7 +275,7 @@ export default function App() {
 // ---------------- PAGES ----------------
 function HomePage({ user }) {
   const [code, setCode] = useState("");
-  const [status, setStatus] = useState(null); // {type: 'ok'|'err', text}
+  const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const onActivate = async () => {
@@ -304,32 +304,78 @@ function HomePage({ user }) {
   };
 
   return (
-    <div className="space-y-5">
-      <h1 className="text-2xl font-bold">Активировать код</h1>
-      <div className="grid grid-cols-1 gap-3">
-        <input
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          placeholder="xxxxx-yyyyy-zzzzz"
-          className="w-full p-3 rounded-2xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-400"
+    <main className="baldezh-card">
+      {/* Логотип */}
+      <div className="flex justify-center mb-6">
+        <img
+          src="/logo-baldezh.png"
+          alt="Балдёжный Четвёртый"
+          style={{ width: 280, height: "auto" }}
         />
-        <button
-          onClick={onActivate}
-          disabled={loading}
-          className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-slate-900 text-white active:scale-[.99] disabled:opacity-60"
-        >
-          <Gift className="w-5 h-5" />
-          {loading ? "Подтверждаем…" : "Активировать"}
-        </button>
-        {status && (
-          <div className={`${status.type === "ok" ? "text-green-600" : "text-red-600"}`}>
-            {status.text}
-          </div>
-        )}
       </div>
-    </div>
+
+      {/* Приветствие */}
+      <div className="font-unbounded-black text-xl mb-2">
+        привет!
+      </div>
+      <div className="font-unbounded-black text-lg mb-4">
+        введи код карточки:
+      </div>
+
+      {/* Поле ввода */}
+      <input
+        className="code-input font-unbounded-medium mb-4"
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+        placeholder="xxxxx-yyyyy-zzzzz"
+        maxLength={17}
+      />
+
+      {/* Кнопка */}
+      <button
+        className="btn-primary font-unbounded-medium mb-6"
+        onClick={onActivate}
+        disabled={loading}
+      >
+        {loading ? "Ввод…" : "Ввод"}
+      </button>
+
+      {/* Описание */}
+      <div className="helper font-inter-black-italic" style={{ opacity: .9 }}>
+        данный код находится на карточке<br/>с обратной стороны
+        <br/><br/>
+        после ввода кода будут добавлены<br/>
+        в коллекцию сама карточка и её вариации
+        <br/><br/>
+        все карточки можно посмотреть<br/>
+        в разделе "коллекция"
+        <br/><br/>
+        собранные карточки можно<br/>
+        посмотреть в профиле
+      </div>
+
+      {/* Касатка */}
+      <div className="mt-10 flex justify-center">
+        <img src="/logo-orca.png" alt="Касатка" style={{ width: 100, height: "auto" }} />
+      </div>
+
+      {/* Статус */}
+      {status && (
+        <div
+          className="mt-4"
+          style={{
+            color: status.type === "ok" ? "#15803D" : "#B91C1C",
+            fontFamily: "'Unbounded', sans-serif",
+            fontWeight: 500
+          }}
+        >
+          {status.text}
+        </div>
+      )}
+    </main>
   );
 }
+
 
 function ProfilePage({ user, onSaved }) {
   const [firstName, setFirstName] = useState(user?.first_name || "");
