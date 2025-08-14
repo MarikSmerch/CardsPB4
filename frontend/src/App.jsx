@@ -332,6 +332,15 @@ function HomePage({ user }) {
               maxLength={17}
             />
 
+            {/* Статус */}
+            {status && (
+              <div
+                className={`status-inline ${status.type === "ok" ? "text-green-700" : "text-red-700"}`}
+              >
+                {status.text}
+              </div>
+            )}
+
             {/* Кнопка */}
             <button
               className="btn-primary font-unbounded-medium home-button"
@@ -359,20 +368,6 @@ function HomePage({ user }) {
             <div className="flex justify-center home-orca">
               <img src="/logo-orca.png" alt="Касатка" style={{ width: 110, height: "auto" }} />
             </div>
-
-            {/* Статус */}
-            {status && (
-              <div
-                className="mt-4"
-                style={{
-                  color: status.type === "ok" ? "#15803D" : "#B91C1C",
-                  fontFamily: "'Unbounded', sans-serif",
-                  fontWeight: 500
-                }}
-              >
-                {status.text}
-              </div>
-            )}
           </main>
         </div>
       </div>
