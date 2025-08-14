@@ -97,6 +97,19 @@ export default function App() {
           <Menu className="w-6 h-6" />
         </button>
         <div className="font-semibold">{PAGES[page]?.title || "Карточки"}</div>
+        <div className="ml-auto">
+          <button
+            className="px-3 py-1.5 text-xs rounded-xl border border-slate-300 hover:bg-slate-100"
+            onClick={() => {
+            // Перезагрузка с ?debug=1 (покажет сырой initData на экране)
+            const url = new URL(window.location.href);
+            url.searchParams.set("debug", "1");
+            window.location.href = url.toString();
+          }}
+          >
+            initData (debug)
+          </button>
+        </div>
       </div>
 
       {/* Content */}
@@ -176,7 +189,7 @@ export default function App() {
               </nav>
 
               <div className="mt-auto p-4 text-xs text-slate-400">
-                © {new Date().getFullYear()} Cards SPB4
+                © {new Date().getFullYear()} CardsPB4
               </div>
             </motion.aside>
           </>

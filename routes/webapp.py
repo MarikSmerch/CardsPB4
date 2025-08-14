@@ -241,3 +241,11 @@ def update_profile(payload: ProfileUpdateIn, db: Session = Depends(get_db)):
         is_banned=bool(getattr(user, "ban_until", None) and now_utc() < user.ban_until),
         ban_until=user.ban_until.isoformat() if getattr(user, "ban_until", None) else None,
     )
+
+
+@router.post("/_echo_init")
+def echo_init(payload: dict):
+    # просто лог/эхо на время отладки
+    init_data = payload.get("initData", "")
+    print("[_echo_init] initData head:", init_data[:160])
+    return {"len": len(init_data)}
