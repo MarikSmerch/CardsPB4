@@ -172,6 +172,11 @@ body {
 .home-helper   { margin-bottom: 64px; line-height: 1.5; }   /* описание -> касатка */
 .home-orca     { margin-top: 40px; }                        /* запас внизу */
 
+.status-inline {
+  margin-bottom: 12px;
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 500;
+}
 
 .app-minh { min-height: 100dvh; }
 
