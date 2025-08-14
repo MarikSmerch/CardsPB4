@@ -21,6 +21,26 @@ const getTg = () => {
 };
 
 // --- API helpers ---
+async function apiSaveProfile({ first_name, last_name, vk_link }) {
+  const tg = getTg();
+  const initData = tg?.initData || "";
+  const res = await fetch("/api/me", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      initData,
+      first_name: first_name ?? null,
+      last_name:  last_name  ?? null,
+      vk_link:    vk_link    ?? null,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.detail || `Save failed (${res.status})`);
+  }
+  return res.json();
+}
+
 async function apiInit() {
   const tg = getTg();
   const initData = tg?.initData || "";
@@ -76,7 +96,7 @@ export default function App() {
       case "home":
         return <HomePage user={user} />;
       case "profile":
-        return <ProfilePage user={user} />;
+        return <ProfilePage user={user} onSaved={setUser} />;
       case "collection":
         return <CollectionPage />;
       case "about":
@@ -310,14 +330,38 @@ function HomePage({ user }) {
   );
 }
 
-function ProfilePage({ user }) {
+function ProfilePage({ user, onSaved }) {
   const [firstName, setFirstName] = useState(user?.first_name || "");
-  const [lastName, setLastName] = useState(user?.last_name || "");
-  const [vk, setVk] = useState("");
+  const [lastName,  setLastName]  = useState(user?.last_name  || "");
+  const [vk,        setVk]        = useState(user?.vk_link    || "");
+  const [saving,    setSaving]    = useState(false);
+  const [msg,       setMsg]       = useState(null); // {type:'ok'|'err', text:''}
 
-  const onSave = () => {
-    // TODO: add POST /api/profile when backend ready
-    alert("Сохраним позже API: " + JSON.stringify({ firstName, lastName, vk }));
+  // если user обновился извне — синхронизируем поля формы
+  useEffect(() => {
+    setFirstName(user?.first_name || "");
+    setLastName(user?.last_name || "");
+    setVk(user?.vk_link || "");
+  }, [user?.first_name, user?.last_name, user?.vk_link]);
+
+  const onSave = async () => {
+    setMsg(null);
+    // подрезаем пробелы; пустые строки -> null (чтоб на бэке стало NULL)
+    const payload = {
+      first_name: (firstName || "").trim() || null,
+      last_name:  (lastName  || "").trim() || null,
+      vk_link:    (vk        || "").trim() || null,
+    };
+    setSaving(true);
+    try {
+      const updated = await apiSaveProfile(payload);
+      onSaved?.(updated); // обновим пользователя в App
+      setMsg({ type: "ok", text: "Сохранено" });
+    } catch (e) {
+      setMsg({ type: "err", text: e.message || "Не удалось сохранить" });
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -348,12 +392,24 @@ function ProfilePage({ user }) {
         <input
           value={vk}
           onChange={(e) => setVk(e.target.value)}
-          placeholder="Ссылка на VK"
+          placeholder="Ссылка на VK (vk.com/..)"
           className="w-full p-3 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-slate-400"
         />
-        <button onClick={onSave} className="px-4 py-3 rounded-2xl bg-slate-900 text-white">Сохранить</button>
+        <button
+          onClick={onSave}
+          disabled={saving}
+          className="px-4 py-3 rounded-2xl bg-slate-900 text-white disabled:opacity-60"
+        >
+          {saving ? "Сохраняем…" : "Сохранить"}
+        </button>
+        {msg && (
+          <div className={msg.type === "ok" ? "text-green-600" : "text-red-600"}>
+            {msg.text}
+          </div>
+        )}
       </div>
 
+      {/* остальной контент страницы — как у тебя */}
       <section className="pt-6 space-y-3">
         <h2 className="text-xl font-semibold">Моя коллекция</h2>
         <div className="grid grid-cols-3 gap-3">
