@@ -283,10 +283,22 @@ function HomePage({ user }) {
     if (typeof e === "string") return e;
     if (typeof e?.message === "string") return e.message;
     if (typeof e?.detail === "string") return e.detail;
-    try { return JSON.stringify(e); } catch { return String(e); }
+     try {
+      const s = JSON.stringify(e);
+      return s && s !== "{}" ? s : "";
+    } catch {
+      return "";
+    }
+};
+  const ensureMessage = (val, type) => {
+    const s = toMessage(val);
+    if (!s || s === "[object Object]") {
+      return type === "ok" ? "Готово" : "Произошла ошибка";
+    }
+    return s;
   };
 
-  const onActivate = async () => {
+ const onActivate = async () => {
     if (!code.trim()) {
       setStatus({ type: "err", text: "Введите код" });
       setSubmitted(true);
@@ -306,10 +318,10 @@ function HomePage({ user }) {
       if (!initData) throw new Error("Открой приложение внутри Telegram");
 
       const res = await apiActivateCode(code.trim(), initData);
-      setStatus({ type: "ok", text: toMessage(res?.message || "Готово") });
+      setStatus({ type: "ok", text: ensureMessage(res?.message || "Готово", "ok") });
       setCode("");
     } catch (e) {
-      setStatus({ type: "err", text: toMessage(e) || "Ошибка при активации" });
+      setStatus({ type: "err", text: ensureMessage(e, "err") });
     } finally {
       setLoading(false);
     }
@@ -352,10 +364,10 @@ function HomePage({ user }) {
             {/* Статус */}
             {submitted && (status?.text ?? "") !== "" && (
               <div
-                className={`status-inline ${status?.type === "ok" ? "text-green-700" : "text-red-700"}`}
-                style={{ color: status?.type === "ok" ? "#15803D" : "#B91C1C" }} // фолбэк-цвет
+                className="status-inline"
+                style={{ color: status?.type === "ok" ? "#15803D" : "#B91C1C" }}
               >
-                {String(status.text)}
+                {status.text}
               </div>
             )}
 
