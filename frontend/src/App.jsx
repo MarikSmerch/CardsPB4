@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Home, User, Images, Info, MapPin, Gift } from "lucide-react";
+
 
 // --- Simple in-memory router (no react-router to keep single-file) ---
 const PAGES = {
