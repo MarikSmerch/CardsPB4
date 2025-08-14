@@ -313,66 +313,68 @@ function HomePage({ user }) {
         />
       </div>
       <div className="page-container">
-        <main className="baldezh-card">
-          {/* Приветствие */}
-          <div className="font-unbounded-black leading-tight home-hello">
-            привет!
-          </div>
-          <div className="font-unbounded-black leading-tight home-subtitle">
-            введи код карточки:
-          </div>
-
-          {/* Поле ввода */}
-          <input
-            className="code-input font-unbounded-medium home-input"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder="xxxxx-yyyyy-zzzzz"
-            maxLength={17}
-          />
-
-          {/* Кнопка */}
-          <button
-            className="btn-primary font-unbounded-medium home-button"
-            onClick={onActivate}
-            disabled={loading}
-          >
-            {loading ? "Ввод…" : "Ввод"}
-          </button>
-
-          {/* Описание */}
-          <div className="helper font-inter-black-italic home-helper" style={{ opacity: .9 }}>
-            данный код находится на карточке<br/>с обратной стороны
-            <br/><br/>
-            после ввода кода будут добавлены<br/>
-            в коллекцию сама карточка и её вариации
-            <br/><br/>
-            все карточки можно посмотреть<br/>
-            в разделе "коллекция"
-            <br/><br/>
-            собранные карточки можно<br/>
-            посмотреть в профиле
-          </div>
-
-          {/* Касатка */}
-          <div className="flex justify-center home-orca">
-            <img src="/logo-orca.png" alt="Касатка" style={{ width: 110, height: "auto" }} />
-          </div>
-
-          {/* Статус */}
-          {status && (
-            <div
-              className="mt-4"
-              style={{
-                color: status.type === "ok" ? "#15803D" : "#B91C1C",
-                fontFamily: "'Unbounded', sans-serif",
-                fontWeight: 500
-              }}
-            >
-              {status.text}
+        <div className="content-wrap">
+          <main className="baldezh-card">
+            {/* Приветствие */}
+            <div className="font-unbounded-black leading-tight home-hello">
+              привет!
             </div>
-          )}
-        </main>
+            <div className="font-unbounded-black leading-tight home-subtitle">
+              введи код карточки:
+            </div>
+
+            {/* Поле ввода */}
+            <input
+              className="code-input font-unbounded-medium home-input"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="xxxxx-yyyyy-zzzzz"
+              maxLength={17}
+            />
+
+            {/* Кнопка */}
+            <button
+              className="btn-primary font-unbounded-medium home-button"
+              onClick={onActivate}
+              disabled={loading}
+            >
+              {loading ? "Ввод…" : "Ввод"}
+            </button>
+
+            {/* Описание */}
+            <div className="helper font-inter-black-italic home-helper" style={{ opacity: .9 }}>
+              данный код находится на карточке<br/>с обратной стороны
+              <br/><br/>
+              после ввода кода будут добавлены<br/>
+              в коллекцию сама карточка и её вариации
+              <br/><br/>
+              все карточки можно посмотреть<br/>
+              в разделе "коллекция"
+              <br/><br/>
+              собранные карточки можно<br/>
+              посмотреть в профиле
+            </div>
+
+            {/* Касатка */}
+            <div className="flex justify-center home-orca">
+              <img src="/logo-orca.png" alt="Касатка" style={{ width: 110, height: "auto" }} />
+            </div>
+
+            {/* Статус */}
+            {status && (
+              <div
+                className="mt-4"
+                style={{
+                  color: status.type === "ok" ? "#15803D" : "#B91C1C",
+                  fontFamily: "'Unbounded', sans-serif",
+                  fontWeight: 500
+                }}
+              >
+                {status.text}
+              </div>
+            )}
+          </main>
+        </div>
       </div>
     </>
   );
