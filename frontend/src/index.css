@@ -45,6 +45,7 @@ body {
   color: var(--brand-text);
   font-size: 16px;
   letter-spacing: 0.02em;
+  text-align: center;
 }
 
 .code-input::placeholder {
@@ -158,5 +159,12 @@ body {
 
 .app-minh { min-height: 100dvh; }
 
-.avatar-sm { width: 80px; height: 80px; }
+.avatar-sm {
+    width: 80px; 
+    height: 80px;
+    margin-left: 12px;
+    margin-right: 12px;
+    margin-top: 12px;
+    margin-bottom: 12px 
+}
 .avatar-md { width: 120px; height: 120px; }
