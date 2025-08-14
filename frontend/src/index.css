@@ -114,14 +114,17 @@ body {
 .full-bleed {
   width: 100dvw;
   margin-left: calc(50% - 50dvw);
+  margin-right: calc(50% - 50dvw);
 }
-
 @supports (width: 100svw) {
-  .full-bleed {
+   .full-bleed {
     width: 100svw;
     margin-left: calc(50% - 50svw);
-  }
-}
+    width: 100svw;
+    margin-left: calc(50% - 50svw);
+    margin-right: calc(50% - 50svw);
+   }
+ }
 
 .hero-logo {
   display: block;
