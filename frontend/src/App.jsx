@@ -4,20 +4,16 @@ import { Menu, X, Home, User, Images, Info, MapPin, Gift } from "lucide-react";
 
 // --- Simple in-memory router (no react-router to keep single-file) ---
 const PAGES = {
-  home: { title: "Главная", icon: Home },
-  profile: { title: "Профиль", icon: User },
-  collection: { title: "Коллекция", icon: Images },
-  about: { title: "О нас", icon: Info },
-  where: { title: "Где получить?", icon: MapPin },
+  home:       { title: "Главная" },
+  profile:    { title: "Профиль" },
+  collection: { title: "Коллекция" },
+  about:      { title: "О нас" },
+  where:      { title: "Где получить?" },
 };
 
 // Utility: Telegram WebApp SDK safe getter
 const getTg = () => {
-  try {
-    return window?.Telegram?.WebApp ?? null;
-  } catch {
-    return null;
-  }
+  try { return window?.Telegram?.WebApp ?? null; } catch { return null; }
 };
 
 // --- API helpers ---
