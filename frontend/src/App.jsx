@@ -15,6 +15,24 @@ const getTg = () => {
   try { return window?.Telegram?.WebApp ?? null; } catch { return null; }
 };
 
+function AnimatedHamburger({ isOpen, setIsOpen, size = 28, color = "#1E0028" }) {
+  return (
+    <div
+      className={`hamburger ${isOpen ? "open" : ""}`}
+      style={{ width: size, height: Math.round(size * 0.7) }}
+      onClick={() => setIsOpen(!isOpen)}
+      role="button"
+      aria-label="Открыть меню"
+      aria-expanded={isOpen ? "true" : "false"}
+      aria-controls="sidebar"
+    >
+      <span className="hamburger-line line-1" style={{ background: color }} />
+      <span className="hamburger-line line-2" style={{ background: color }} />
+      <span className="hamburger-line line-3" style={{ background: color }} />
+    </div>
+  );
+}
+
 // --- API helpers ---
 async function apiSaveProfile({ first_name, last_name, vk_link }) {
   const tg = getTg();
@@ -127,19 +145,14 @@ export default function App() {
     <div className="min-h-screen font-unbounded app-minh" style={{ color: "#1E0028" }}>
       {/* Top bar */}
       <div className="sticky top-0 z-40 flex items-center gap-3 px-4 py-3 bg-white/60 backdrop-blur shadow"
-           style={{ fontWeight: 500 }}>
-          <button
-            className="p-2 rounded-xl hover:bg-white/30 active:scale-95 transition"
-            onClick={() => setSidebarOpen(true)}
-            aria-label="Открыть меню"
-            aria-expanded={sidebarOpen ? "true" : "false"}
-            aria-controls="sidebar"
-          >
-            <div className={`burger ${sidebarOpen ? "is-open" : ""}`}><span /></div>
-          </button>
+          style={{ fontWeight: 500 }}>
+        <button className="p-2 rounded-xl hover:bg-white/30 active:scale-95 transition">
+          <AnimatedHamburger isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+        </button>
         <div className="font-unbounded-medium">
           {page === "home" ? "" : (PAGES[page]?.title || "")}
         </div>
+      </div>
 
         <div className="ml-auto space-x-2">
           <button

@@ -75,22 +75,20 @@ body {
 }
 
 /* Бургер-кнопка */
-.burger {
-  position: relative; width: 28px; height: 22px;
+.hamburger { position: relative; display: inline-block; cursor: pointer; }
+.hamburger-line {
+  position: absolute; left: 0; right: 0;
+  height: 2.5px; border-radius: 2px;
+  transition: transform .25s ease, opacity .2s ease, width .25s ease;
 }
-.burger span, .burger::before, .burger::after {
-  content: ""; position: absolute; left: 0; right: 0; height: 2.5px;
-  border-radius: 2px; background: var(--brand-text);
-  transition: transform .2s ease, opacity .2s ease, top .2s ease;
-}
-.burger span { top: 9.5px; }
-.burger::before { top: 0; }
-.burger::after  { top: 19px; }
+.hamburger .line-1 { top: 0; }
+.hamburger .line-2 { top: 50%; transform: translateY(-50%); }
+.hamburger .line-3 { bottom: 0; }
 
-/* Состояние «открыто» — превращаемся в X */
-.burger.is-open span     { opacity: 0; }
-.burger.is-open::before  { top: 9.5px; transform: rotate(45deg); }
-.burger.is-open::after   { top: 9.5px; transform: rotate(-45deg); }
+/* открытое меню — лёгкий сдвиг полосок, средняя слегка короче */
+.hamburger.open .line-1 { transform: translateY(35%); }
+.hamburger.open .line-3 { transform: translateY(-35%); }
+.hamburger.open .line-2 { opacity: .6; width: 70%; margin-left: 15%; }
 
 /* Полноэкранные элементы внутри контентного контейнера */
 .full-bleed {
