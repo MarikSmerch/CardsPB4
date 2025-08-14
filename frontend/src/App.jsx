@@ -152,7 +152,7 @@ export default function App() {
         </div>
       </div>
 
-        <div className="ml-auto space-x-2">
+        {/* <div className="ml-auto space-x-2">
           <button
             className="px-3 py-1.5 text-xs rounded-xl border border-[#1E0028] hover:bg-white/30"
             onClick={() => {
@@ -170,7 +170,7 @@ export default function App() {
           >
             Показать initData
           </button>
-        </div>
+        </div> */}
 
       {/* Debug modal */}
       {/* {debugOpen && (
