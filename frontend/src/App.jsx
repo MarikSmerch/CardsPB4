@@ -173,7 +173,6 @@ export default function App() {
             Показать initData
           </button>
         </div>
-      </div>
 
       {/* Debug modal */}
       {debugOpen && (
