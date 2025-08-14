@@ -79,11 +79,13 @@ export default function App() {
   useEffect(() => {
     const tg = getTg();
     tg?.ready?.();
+    tg?.setHeaderColor?.("#00000000");
+    tg?.setBackgroundColor?.("#00000000");
     (async () => {
       try {
         const data = await apiInit();
         setUser(data);
-      } catch (e) {
+      } catch {
         setError("Не удалось получить данные пользователя");
       } finally {
         setLoading(false);
@@ -93,37 +95,36 @@ export default function App() {
 
   const CurrentPage = useMemo(() => {
     switch (page) {
-      case "home":
-        return <HomePage user={user} />;
-      case "profile":
-        return <ProfilePage user={user} onSaved={setUser} />;
-      case "collection":
-        return <CollectionPage />;
-      case "about":
-        return <AboutPage />;
-      case "where":
-        return <WherePage />;
-      default:
-        return <HomePage user={user} />;
+      case "home":       return <HomePage user={user} />;
+      case "profile":    return <ProfilePage user={user} onSaved={setUser} />;
+      case "collection": return <CollectionPage />;
+      case "about":      return <AboutPage />;
+      case "where":      return <WherePage />;
+      default:           return <HomePage user={user} />;
     }
   }, [page, user]);
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
+    <div className="min-h-screen" style={{
+      background: "linear-gradient(#EABCF5, #96DEE8)",
+      color: "#1E0028",
+      fontFamily: "'Unbounded', sans-serif"
+    }}>
       {/* Top bar */}
-      <div className="sticky top-0 z-40 flex items-center gap-3 px-4 py-3 bg-white/80 backdrop-blur shadow">
+      <div className="sticky top-0 z-40 flex items-center gap-3 px-4 py-3 bg-white/60 backdrop-blur shadow"
+           style={{ fontWeight: 500 }}>
         <button
-          className="p-2 rounded-xl hover:bg-slate-100 active:scale-95 transition"
+          className="p-2 rounded-xl hover:bg-white/30 active:scale-95 transition"
           onClick={() => setSidebarOpen(true)}
           aria-label="Открыть меню"
         >
-          <Menu className="w-6 h-6" />
+          <Menu className="w-6 h-6" color="#1E0028" />
         </button>
-        <div className="font-semibold">{PAGES[page]?.title || "Карточки"}</div>
+        <div className="font-unbounded-medium">{PAGES[page]?.title || "Карточки"}</div>
 
         <div className="ml-auto space-x-2">
           <button
-            className="px-3 py-1.5 text-xs rounded-xl border border-slate-300 hover:bg-slate-100"
+            className="px-3 py-1.5 text-xs rounded-xl border border-[#1E0028] hover:bg-white/30"
             onClick={() => {
               const tg = getTg();
               const id = tg?.initData || "";

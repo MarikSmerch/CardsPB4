@@ -1,3 +1,72 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* === БАЗА: фон и цвет текста === */
+:root {
+  --brand-text: #1E0028;
+}
+html, body, #root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: linear-gradient(#EABCF5, #96DEE8);
+  color: var(--brand-text);
+}
+
+/* === Шрифты === */
+.font-unbounded { font-family: 'Unbounded', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+.font-unbounded-black { font-family: 'Unbounded', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; font-weight: 900; }
+.font-unbounded-medium { font-family: 'Unbounded', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; font-weight: 500; }
+.font-inter-black-italic { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; font-weight: 900; font-style: italic; }
+
+/* === Карточка главного экрана === */
+.baldezh-card {
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 24px 18px 32px;
+  text-align: center;
+}
+
+/* поле ввода под маску XXXXX-YYYYY-ZZZZZ */
+.code-input {
+  width: 100%;
+  height: 44px;
+  border-radius: 999px;
+  border: none;
+  outline: none;
+  padding: 0 18px;
+  background: rgba(255,255,255,0.75);
+  color: var(--brand-text);
+  font-size: 16px;
+  letter-spacing: 0.02em;
+}
+
+.code-input::placeholder {
+  color: rgba(30,0,40,0.55);
+  text-transform: uppercase;
+}
+
+/* кнопка ввода */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--brand-text);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: transform .05s ease;
+}
+.btn-primary:active { transform: scale(0.98); }
+
+/* мелкие подписи */
+.helper {
+  font-size: 11.5px;
+  line-height: 1.25rem;
+}
