@@ -296,7 +296,7 @@ function HomePage({ user }) {
       setStatus({ type: "ok", text: res?.message || "Готово" });
       setCode("");
     } catch (e) {
-      setStatus({ type: "err", text: "Ошибка при активации" });
+      setStatus({ type: "err", text: e?.message || "Ошибка при активации" });
     } finally {
       setLoading(false);
     }

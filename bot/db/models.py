@@ -1,6 +1,12 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, TIMESTAMP, func
+from sqlalchemy import DateTime
 from sqlalchemy.orm import relationship
 from .base import Base
+
+last_failed_at = Column(DateTime(timezone=True))
+ban_until = Column(DateTime(timezone=True))
+created_at = Column(DateTime(timezone=True), server_default=func.now())
+ban_expiration = Column(DateTime(timezone=True))
 
 # --- Типы/Коллекции ---
 
