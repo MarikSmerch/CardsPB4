@@ -276,6 +276,7 @@ function HomePage({ user }) {
   const [code, setCode] = useState("");
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const toMessage = (e) => {
     if (!e) return "Ошибка";
@@ -288,14 +289,17 @@ function HomePage({ user }) {
   const onActivate = async () => {
     if (!code.trim()) {
       setStatus({ type: "err", text: "Введите код" });
+      setSubmitted(true);
       return;
     }
     if (!user?.telegram_id) {
       setStatus({ type: "err", text: "Telegram ID не определён" });
+      setSubmitted(true);
       return;
     }
     setLoading(true);
     setStatus(null);
+    setSubmitted(true);
     try {
       const tg = window?.Telegram?.WebApp;
       const initData = tg?.initData;
@@ -336,15 +340,20 @@ function HomePage({ user }) {
             <input
               className="code-input font-unbounded-medium home-input"
               value={code}
-              onChange={(e) => { setCode(e.target.value); if (status) setStatus(null); }}
+              onChange={(e) => {
+                setCode(e.target.value);
+                if (status) setStatus(null);
+                if (submitted) setSubmitted(false);
+              }}
               placeholder="xxxxx-yyyyy-zzzzz"
               maxLength={17}
             />
 
             {/* Статус */}
-            {(status?.text ?? "") !== "" && (
+            {submitted && (status?.text ?? "") !== "" && (
               <div
                 className={`status-inline ${status?.type === "ok" ? "text-green-700" : "text-red-700"}`}
+                style={{ color: status?.type === "ok" ? "#15803D" : "#B91C1C" }} // фолбэк-цвет
               >
                 {String(status.text)}
               </div>
