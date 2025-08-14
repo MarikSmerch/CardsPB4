@@ -511,11 +511,14 @@ function AboutPage() {
 function WherePage() {
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold">Где получить?</h1>
-      <div className="rounded-2xl overflow-hidden">
-        <div className="h-56 bg-slate-300" />
+      <h1 className="text-2xl font-bold">
+        мероприятия, на которых можно получить карточки
+      </h1>
+
+      {/* Полноширинное изображение */}
+      <div className="full-bleed">
+        <img className="hero-logo" src="/roadmap.png" alt="Карта мероприятий" />
       </div>
-      <p className="text-slate-600">Здесь можно разместить карту/фото точек раздачи.</p>
     </div>
   );
 }
