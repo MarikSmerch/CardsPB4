@@ -112,30 +112,22 @@ body {
 
 /* Полноэкранные элементы внутри контентного контейнера */
 .full-bleed {
-  margin-left: calc(50% - 50dvw);
-  margin-right: calc(50% - 50dvw);
-}
-.full-bleed-outer {
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50dvw;
-  margin-right: -50dvw;
   width: 100dvw;
+  margin-left: calc(50% - 50dvw);
 }
+
 @supports (width: 100svw) {
-  .full-bleed-outer {
-    margin-left: -50svw;
-    margin-right: -50svw;
+  .full-bleed {
     width: 100svw;
+    margin-left: calc(50% - 50svw);
   }
 }
+
 .hero-logo {
   display: block;
-  width: 100dvw;
-  max-width: 100%;
+  width: 100%;
   height: auto;
-}   
+}
 
 .sidebar {
   position: fixed; left: 0; top: 0; bottom: 0;
@@ -189,21 +181,3 @@ body {
     margin-bottom: 12px 
 }
 .avatar-md { width: 120px; height: 120px; }
-
-@supports (width: 100svw) {
-  .full-bleed {
-    margin-left: calc(50% - 50svw);
-    margin-right: calc(50% - 50svw);
-  }
-  .hero-logo { width: 100svw; }
-}
-
-@supports (padding: max(0px)) {
-  .full-bleed, .full-bleed-outer { transform: translateZ(0); } /* устранение субпиксельных артефактов */
-}
-
-.page-container { padding-left: 16px; padding-right: 16px; }
-
-@media (max-width: 520px) {
-  .page-container { padding-left: 0; padding-right: 0; }
-}

@@ -305,7 +305,7 @@ function HomePage({ user }) {
   return (
     <main className="baldezh-card">
       {/* Логотип */}
-      <div className="full-bleed-outer mt-2 mb-12">
+      <div className="full-bleed mt-2 mb-12">
         <img
           className="hero-logo"
           src="/logo-baldezh.png"
@@ -520,7 +520,7 @@ function WherePage() {
       </h1>
 
       {/* Полноширинное изображение */}
-      <div className="full-bleed-outer">
+      <div className="full-bleed">
         <img className="hero-logo" src="/roadmap.png" alt="Карта мероприятий" />
       </div>
     </div>
