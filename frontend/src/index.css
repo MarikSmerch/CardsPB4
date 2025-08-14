@@ -11,7 +11,8 @@ html, body, #root {
 }
 body {
   margin: 0;
-  background: linear-gradient(#EABCF5, #96DEE8);
+  background: linear-gradient( 45deg, #96DEE8, #EABCF5);
+  background-attachment: fixed;
   color: var(--brand-text);
 }
 
@@ -69,4 +70,31 @@ body {
 .helper {
   font-size: 11.5px;
   line-height: 1.25rem;
+}
+
+/* Бургер-кнопка */
+.burger {
+  position: relative; width: 28px; height: 22px;
+}
+.burger span, .burger::before, .burger::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 2.5px;
+  border-radius: 2px; background: var(--brand-text);
+  transition: transform .2s ease, opacity .2s ease, top .2s ease;
+}
+.burger span { top: 9.5px; }
+.burger::before { top: 0; }
+.burger::after  { top: 19px; }
+
+/* Состояние «открыто» — превращаемся в X */
+.burger.is-open span     { opacity: 0; }
+.burger.is-open::before  { top: 9.5px; transform: rotate(45deg); }
+.burger.is-open::after   { top: 9.5px; transform: rotate(-45deg); }
+
+/* Полноэкранные элементы внутри контентного контейнера */
+.full-bleed {
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+.hero-logo {
+  width: 100vw; height: auto; display: block;
 }

@@ -128,14 +128,18 @@ export default function App() {
       {/* Top bar */}
       <div className="sticky top-0 z-40 flex items-center gap-3 px-4 py-3 bg-white/60 backdrop-blur shadow"
            style={{ fontWeight: 500 }}>
-        <button
-          className="p-2 rounded-xl hover:bg-white/30 active:scale-95 transition"
-          onClick={() => setSidebarOpen(true)}
-          aria-label="Открыть меню"
-        >
-          <IconMenu />
-        </button>
-        <div className="font-unbounded-medium">{PAGES[page]?.title || "Карточки"}</div>
+          <button
+            className="p-2 rounded-xl hover:bg-white/30 active:scale-95 transition"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Открыть меню"
+            aria-expanded={sidebarOpen ? "true" : "false"}
+            aria-controls="sidebar"
+          >
+            <div className={`burger ${sidebarOpen ? "is-open" : ""}`}><span /></div>
+          </button>
+        <div className="font-unbounded-medium">
+          {page === "home" ? "" : (PAGES[page]?.title || "")}
+        </div>
 
         <div className="ml-auto space-x-2">
           <button
@@ -218,7 +222,7 @@ export default function App() {
             className="fixed inset-0 bg-black/40 z-40"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside
+          <aside id="sidebar"
             className="fixed left-0 top-0 bottom-0 w-[80%] max-w-[320px] bg-white z-50 shadow-xl"
             style={{ transform: "translateX(0)" }}
           >
@@ -309,25 +313,25 @@ function HomePage({ user }) {
   return (
     <main className="baldezh-card">
       {/* Логотип */}
-      <div className="flex justify-center mb-6">
+      <div className="full-bleed mb-8">
         <img
+          className="hero-logo"
           src="/logo-baldezh.png"
           alt="Балдёжный Четвёртый"
-          style={{ width: 280, height: "auto" }}
         />
       </div>
 
       {/* Приветствие */}
-      <div className="font-unbounded-black text-xl mb-2">
+      <div className="font-unbounded-black text-xl mt-6 mb-3">
         привет!
       </div>
-      <div className="font-unbounded-black text-lg mb-4">
+      <div className="font-unbounded-black text-lg mb-6">
         введи код карточки:
       </div>
 
       {/* Поле ввода */}
       <input
-        className="code-input font-unbounded-medium mb-4"
+        className="code-input font-unbounded-medium mb-5"
         value={code}
         onChange={(e) => setCode(e.target.value)}
         placeholder="xxxxx-yyyyy-zzzzz"
@@ -336,7 +340,7 @@ function HomePage({ user }) {
 
       {/* Кнопка */}
       <button
-        className="btn-primary font-unbounded-medium mb-6"
+        className="btn-primary font-unbounded-medium mb-8"
         onClick={onActivate}
         disabled={loading}
       >
@@ -344,7 +348,7 @@ function HomePage({ user }) {
       </button>
 
       {/* Описание */}
-      <div className="helper font-inter-black-italic" style={{ opacity: .9 }}>
+      <div className="helper font-inter-black-italic" style={{opacity:.9, lineHeight: "1.45"}}>
         данный код находится на карточке<br/>с обратной стороны
         <br/><br/>
         после ввода кода будут добавлены<br/>
@@ -358,7 +362,7 @@ function HomePage({ user }) {
       </div>
 
       {/* Касатка */}
-      <div className="mt-10 flex justify-center">
+      <div className="mt-16 flex justify-center">
         <img src="/logo-orca.png" alt="Касатка" style={{ width: 100, height: "auto" }} />
       </div>
 
