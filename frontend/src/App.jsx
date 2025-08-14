@@ -173,7 +173,7 @@ export default function App() {
         </div>
 
       {/* Debug modal */}
-      {debugOpen && (
+      {/* {debugOpen && (
         <div className="fixed inset-0 z-50">
           <div className="absolute inset-0 bg-black/40" onClick={() => setDebugOpen(false)} />
           <div className="absolute left-1/2 top-10 -translate-x-1/2 w-[92%] max-w-2xl bg-white rounded-2xl shadow-xl p-4">
@@ -212,7 +212,7 @@ export default function App() {
             </pre>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Content */}
       <div className="px-4 py-5 max-w-xl mx-auto">
