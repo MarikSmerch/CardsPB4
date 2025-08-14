@@ -413,13 +413,19 @@ function ProfilePage({ user, onSaved }) {
   return (
     <div className="space-y-5">
       <h1 className="text-2xl font-bold">Профиль</h1>
-      <div className="flex items-center gap-4">
-        <div className="avatar-md rounded-full bg-slate-200 overflow-hidden">
+      <div className="flex items-center gap-4 p-4">
+        <div className="w-16 h-16 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
           {user?.avatar_url ? (
-            <img src={user.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+            <img
+              src={user.avatar_url}
+              alt="avatar"
+              className="w-full h-full object-cover"
+            />
           ) : null}
         </div>
-        <div className="text-slate-600 text-sm">@{user?.username || "unknown"}</div>
+        <div className="font-unbounded-medium text-base text-slate-800">
+          @{user?.username || "unknown"}
+        </div>
       </div>
 
       <div className="grid gap-3">
