@@ -262,11 +262,18 @@ export default function App() {
 
         {/* Пункты меню */}
         <nav className="menu">
-          {Object.entries(PAGES).map(([key, meta]) => (
-            <button key={key} onClick={() => { setPage(key); setSidebarOpen(false); }}>
-              {meta.title}
-            </button>
-          ))}
+          {Object.entries(PAGES).map(([key]) => {
+            const active = page === key;
+            return (
+              <button
+                key={key}
+                onClick={() => { setPage(key); setSidebarOpen(false); }}
+                className={`w-full py-4 ${active ? "bg-slate-900" : ""}`}
+              >
+                {/* ничего не выводим */}
+              </button>
+            );
+          })}
         </nav>
       </aside>
     </div>
