@@ -105,11 +105,7 @@ export default function App() {
   }, [page, user]);
 
   return (
-    <div className="min-h-screen" style={{
-      background: "linear-gradient(#EABCF5, #96DEE8)",
-      color: "#1E0028",
-      fontFamily: "'Unbounded', sans-serif"
-    }}>
+    <div className="min-h-screen font-unbounded" style={{ color: "#1E0028" }}>
       {/* Top bar */}
       <div className="sticky top-0 z-40 flex items-center gap-3 px-4 py-3 bg-white/60 backdrop-blur shadow"
            style={{ fontWeight: 500 }}>
