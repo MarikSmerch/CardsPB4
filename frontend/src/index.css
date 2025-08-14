@@ -75,20 +75,36 @@ body {
 }
 
 /* Бургер-кнопка */
-.hamburger { position: relative; display: inline-block; cursor: pointer; }
-.hamburger-line {
-  position: absolute; left: 0; right: 0;
-  height: 2.5px; border-radius: 2px;
-  transition: transform .25s ease, opacity .2s ease, width .25s ease;
+.hamburger { 
+  position: relative;
+  width: 28px;
+  height: 20px;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
-.hamburger .line-1 { top: 0; }
-.hamburger .line-2 { top: 50%; transform: translateY(-50%); }
-.hamburger .line-3 { bottom: 0; }
+.hamburger-line {
+  position: absolute;
+  left: 50%;
+  width: 22px;
+  height: 2.5px;
+  border-radius: 2px;
+  background: var(--brand-text);
+  transform: translateX(-50%);
+  transition: transform .22s ease, opacity .18s ease, width .22s ease;
+}
+.hamburger .line-1 { top: 2px; }
+.hamburger .line-2 { top: 50%; transform: translate(-50%, -50%); }
+.hamburger .line-3 { bottom: 2px; }
+
+.hamburger:hover .hamburger-line { opacity: 0.9; }
 
 /* открытое меню — лёгкий сдвиг полосок, средняя слегка короче */
-.hamburger.open .line-1 { transform: translateY(35%); }
-.hamburger.open .line-3 { transform: translateY(-35%); }
-.hamburger.open .line-2 { opacity: .6; width: 70%; margin-left: 15%; }
+.hamburger.open .line-1 { top: 7px; }
+.hamburger.open .line-3 { bottom: 7px; }
+.hamburger.open .line-2 { width: 16px; }
+
+.hamburger:hover { filter: drop-shadow(0 1px 4px rgba(0,0,0,.08)); }
 
 /* Полноэкранные элементы внутри контентного контейнера */
 .full-bleed {

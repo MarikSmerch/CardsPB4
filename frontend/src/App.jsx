@@ -146,9 +146,7 @@ export default function App() {
       {/* Top bar */}
       <div className="sticky top-0 z-40 flex items-center gap-3 px-4 py-3 bg-white/60 backdrop-blur shadow"
           style={{ fontWeight: 500 }}>
-        <button className="p-2 rounded-xl hover:bg-white/30 active:scale-95 transition">
-          <AnimatedHamburger isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-        </button>
+        <AnimatedHamburger isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
         <div className="font-unbounded-medium">
           {page === "home" ? "" : (PAGES[page]?.title || "")}
         </div>
