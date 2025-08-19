@@ -6,7 +6,7 @@ sys.path.append(BASE_DIR)
 
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from bot.db.base import engine
+from bot.db import engine
 from bot.db.models import CardType
 
 PEOPLE = [
