@@ -1,4 +1,4 @@
-from sqlalchemy import Column,String, Boolean, ForeignKey, TIMESTAMP, func, BigInteger
+from sqlalchemy import Column,  String, Boolean, ForeignKey, TIMESTAMP, func, BigInteger, Text
 from sqlalchemy import DateTime
 from sqlalchemy.orm import relationship
 from .base import Base
@@ -16,6 +16,7 @@ class CardType(Base):
     id = Column(BigInteger, primary_key=True, index=True)
     first_name = Column(String(100), nullable=False)
     last_name = Column(String(100), nullable=False)
+    description = Column(Text, nullable=True)
 
     cards = relationship("Card", back_populates="card_type")
     memberships = relationship("CardTypeInCollection", back_populates="card_type")
