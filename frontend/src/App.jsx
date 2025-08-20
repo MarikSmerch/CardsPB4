@@ -553,7 +553,7 @@ function CollectionPage() {
 
   // Кэш в sessionStorage
   useEffect(() => {
-    const CACHE_KEY = "collections_v2"; // ← новая версия кэша
+    const CACHE_KEY = "collections_v3";  // ← новая версия кэша
     const cached = sessionStorage.getItem(CACHE_KEY);
     if (cached) {
       try {
@@ -577,8 +577,15 @@ function CollectionPage() {
     (async () => {
       try {
         const payload = await apiCollections();
-        setData(payload);
-        sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), payload }));
+        const normalized = (payload || []).map(col => ({
+          ...col,
+          items: (col.items || []).map(it => ({
+            ...it,
+            description: typeof it.description === "string" ? it.description : ""
+          }))
+        }));
+        setData(normalized);
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), payload: normalized }));
       } catch (e) {
         setErr(e.message || "Не удалось загрузить коллекции");
       } finally {
