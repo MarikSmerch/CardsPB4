@@ -293,9 +293,9 @@ body {
 .modal-root { position: fixed; inset: 0; z-index: 60; }
 .modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.55); }
 .modal-card {
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0,0,0,.35);
+  box-shadow: 0 6px 24px rgba(0,0,0,.3);
   background: #fff;
 }
 
@@ -314,10 +314,10 @@ body {
 }
 
 .modal-info-panel {
-  margin-top: 16px;
+  margin-top: 12px;
   background: #ECFCFF;
-  border-radius: 12px;
-  padding: 12px 16px;
+  border-radius: 10px;
+  padding: 8px 12px; 
   text-align: center;
   box-shadow: 0 6px 20px rgba(0,0,0,.18);
   font-family: 'Unbounded', sans-serif;
