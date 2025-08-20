@@ -153,7 +153,7 @@ def collections(payload: InitIn, db: Session = Depends(get_db)):
                 ))
             ).scalar()
 
-            desc = (ct.description or "").strip()
+            desc = ct.description if ct.description is not None else ""
 
             items.append(CardTypeInCollectionOut(
                 id=ct.id,
