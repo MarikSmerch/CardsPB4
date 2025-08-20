@@ -137,40 +137,44 @@ def collections(payload: InitIn, db: Session = Depends(get_db)):
 
     result: list[CollectionWithCardsOut] = []
     for col in cols:
-        memberships = db.execute(
-            select(CardTypeInCollection, CardType)
+        rows = db.execute(
+            select(
+                CardType.id.label("ct_id"),
+                CardType.first_name.label("fn"),
+                CardType.last_name.label("ln"),
+                CardType.description.label("ct_desc"),
+                CardTypeInCollection.image_path.label("img"),
+            )
             .join(CardType, CardType.id == CardTypeInCollection.card_type_id)
             .where(CardTypeInCollection.collection_id == col.id)
         ).all()
 
         items: list[CardTypeInCollectionOut] = []
-        for m, ct in memberships:
+        for r in rows:
             collected = db.execute(
                 select(exists().where(
-                    Card.card_type_id == ct.id,
-                    Card.is_activated == True,
+                    Card.card_type_id == r.ct_id,
+                    Card.is_activated == True,   # noqa: E712
                     Card.activated_by == user.id
                 ))
             ).scalar()
 
-            desc = ct.description if ct.description is not None else ""
-
             items.append(CardTypeInCollectionOut(
-                id=ct.id,
-                first_name=ct.first_name,
-                last_name=ct.last_name,
-                description=desc,
-                image_path=m.image_path,
+                id=r.ct_id,
+                first_name=r.fn,
+                last_name=r.ln,
+                description=r.ct_desc if r.ct_desc is not None else "",
+                image_path=r.img,
                 collected=bool(collected),
             ))
 
         items.sort(key=lambda x: (x.first_name.lower(), x.last_name.lower()))
-
         result.append(CollectionWithCardsOut(
             id=col.id, slug=col.slug, title=col.title, is_primary=col.is_primary, items=items
         ))
 
     return result
+
 
 
 @router.post("/me/cards", response_model=list[CardBriefOut])
