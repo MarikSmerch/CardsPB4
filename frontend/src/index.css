@@ -483,3 +483,130 @@ body {
   width: 100%;
   height: auto;
 }
+
+/* ===== Профиль ===== */
+.profile-wrap {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.profile-title {
+  text-align: center;
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 900;
+  font-size: 28px;
+  letter-spacing: .5px;
+  text-transform: lowercase;
+  margin: 8px 0 18px;
+  color: var(--brand-text);
+}
+
+.profile-header {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.avatar-lg {
+  width: 112px; height: 112px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e5e7eb;
+  box-shadow: 0 6px 22px rgba(0,0,0,.15);
+}
+.avatar-placeholder { width: 100%; height: 100%; }
+
+.profile-username {
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 600;
+  color: #374151; 
+}
+
+.divider {
+  height: 1px;
+  background: rgba(0,0,0,.16);
+  margin: 18px 0;
+  border-radius: 1px;
+}
+
+/* форма */
+.profile-form {
+  display: grid;
+  gap: 14px;
+}
+.field > span {
+  display: block;
+  font-size: 12px;
+  opacity: .7;
+  margin-bottom: 6px;
+}
+.profile-input {
+  width: 100%;
+  height: 48px;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 14px;
+  background: #fff;
+  padding: 0 14px;
+  outline: none;
+  font-size: 15px;
+  color: var(--brand-text);
+}
+.profile-input:focus {
+  border-color: rgba(0,0,0,.3);
+  box-shadow: 0 0 0 3px rgba(0,0,0,.06);
+}
+
+.profile-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+.btn-save {
+  height: 42px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 14px;
+  background: #111827;
+  color: #fff;
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-save:disabled { opacity: .6; cursor: default; }
+.save-msg { font-size: 14px; }
+.save-msg.ok  { color: #15803D; }
+.save-msg.err { color: #B91C1C; }
+
+.profile-subtitle {
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.mycards-grid .mycard-tile {
+  aspect-ratio: 3/4;
+  border-radius: 12px;
+  background: #ECFCFF;
+  border: 1px solid rgba(0,0,0,.12);
+  box-shadow: 0 6px 16px rgba(0,0,0,.08);
+  display: grid;
+  padding: 10px;
+  align-content: end;
+}
+.mycard-name {
+  font-weight: 700;
+  font-size: 12.5px;
+  line-height: 1.2;
+}
+.mycard-code {
+  opacity: .7;
+  font-size: 11px;
+}
+
+.prizes-list { display: grid; gap: 6px; }
+.prize-item { font-size: 15px; }
+.muted { opacity: .7; }

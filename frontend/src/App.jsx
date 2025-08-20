@@ -111,6 +111,30 @@ async function apiCollections() {
   return res.json();
 }
 
+async function apiMyCards() {
+  const tg = getTg();
+  const initData = tg?.initData || "";
+  const res = await fetch("/api/me/cards", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ initData }),
+  });
+  if (!res.ok) throw new Error("Cards fetch failed");
+  return res.json();
+}
+
+async function apiMyPrizes() {
+  const tg = getTg();
+  const initData = tg?.initData || "";
+  const res = await fetch("/api/me/prizes", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ initData }),
+  });
+  if (!res.ok) throw new Error("Prizes fetch failed");
+  return res.json();
+}
+
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [page, setPage] = useState("home");
@@ -445,7 +469,7 @@ function ProfilePage({ user, onSaved }) {
   const [saving,    setSaving]    = useState(false);
   const [msg,       setMsg]       = useState(null); // {type:'ok'|'err', text:''}
 
-  // если user обновился извне — синхронизируем поля формы
+  // данные пользователя могут обновиться извне
   useEffect(() => {
     setFirstName(user?.first_name || "");
     setLastName(user?.last_name || "");
@@ -454,7 +478,6 @@ function ProfilePage({ user, onSaved }) {
 
   const onSave = async () => {
     setMsg(null);
-    // подрезаем пробелы; пустые строки -> null (чтоб на бэке стало NULL)
     const payload = {
       first_name: (firstName || "").trim() || null,
       last_name:  (lastName  || "").trim() || null,
@@ -463,7 +486,7 @@ function ProfilePage({ user, onSaved }) {
     setSaving(true);
     try {
       const updated = await apiSaveProfile(payload);
-      onSaved?.(updated); // обновим пользователя в App
+      onSaved?.(updated);
       setMsg({ type: "ok", text: "Сохранено" });
     } catch (e) {
       setMsg({ type: "err", text: e.message || "Не удалось сохранить" });
@@ -472,78 +495,126 @@ function ProfilePage({ user, onSaved }) {
     }
   };
 
+  // --- мои карточки и призы ---
+  const [myCards, setMyCards] = useState(null);  // null=загрузка, []=пусто
+  const [myPrizes, setMyPrizes] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const [cards, prizes] = await Promise.all([apiMyCards(), apiMyPrizes()]);
+        if (!alive) return;
+        setMyCards(cards || []);
+        setMyPrizes(prizes || []);
+      } catch {
+        if (!alive) return;
+        setMyCards([]);
+        setMyPrizes([]);
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+
   return (
-    <div className="space-y-5">
-      <h1 className="text-2xl font-bold">Профиль</h1>
-      <div className="flex items-center gap-4 p-4">
-        <div className="w-16 h-16 rounded-full bg-slate-200 overflow-hidden flex-shrink-0">
+    <div className="profile-wrap">
+      <h1 className="profile-title">Мой профиль</h1>
+
+      {/* Аватар и username */}
+      <div className="profile-header">
+        <div className="avatar-lg">
           {user?.avatar_url ? (
-            <img
-              src={user.avatar_url}
-              alt="avatar"
-              className="w-full h-full object-cover"
-            />
-          ) : null}
+            <img src={user.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+          ) : <div className="avatar-placeholder" />}
         </div>
-        <div className="font-unbounded-medium text-base text-slate-800">
-          @{user?.username || "unknown"}
+        <div className="profile-username">@{user?.username || "unknown"}</div>
+      </div>
+
+      <div className="divider" />
+
+      {/* Форма редактирования */}
+      <div className="profile-form">
+        <label className="field">
+          <span>Имя</span>
+          <input
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="Имя"
+            className="profile-input"
+          />
+        </label>
+        <label className="field">
+          <span>Фамилия</span>
+          <input
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            placeholder="Фамилия"
+            className="profile-input"
+          />
+        </label>
+        <label className="field">
+          <span>Ссылка на VK (опционально)</span>
+          <input
+            value={vk}
+            onChange={(e) => setVk(e.target.value)}
+            placeholder="https://vk.com/username"
+            className="profile-input"
+          />
+        </label>
+
+        <div className="profile-actions">
+          <button onClick={onSave} disabled={saving} className="btn-save">
+            {saving ? "Сохраняем…" : "Сохранить"}
+          </button>
+          {msg && (
+            <div className={`save-msg ${msg.type === "ok" ? "ok" : "err"}`}>
+              {msg.text}
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="grid gap-3">
-        <input
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          placeholder="Имя"
-          className="w-full p-3 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-slate-400"
-        />
-        <input
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          placeholder="Фамилия"
-          className="w-full p-3 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-slate-400"
-        />
-        <input
-          value={vk}
-          onChange={(e) => setVk(e.target.value)}
-          placeholder="Ссылка на VK (vk.com/..)"
-          className="w-full p-3 rounded-2xl border border-slate-300 focus:ring-2 focus:ring-slate-400"
-        />
-        <button
-          onClick={onSave}
-          disabled={saving}
-          className="px-4 py-3 rounded-2xl bg-slate-900 text-white disabled:opacity-60"
-        >
-          {saving ? "Сохраняем…" : "Сохранить"}
-        </button>
-        {msg && (
-          <div className={msg.type === "ok" ? "text-green-600" : "text-red-600"}>
-            {msg.text}
-          </div>
-        )}
-      </div>
+      <div className="divider" />
 
-      {/* остальной контент страницы — как у тебя */}
-      <section className="pt-6 space-y-3">
-        <h2 className="text-xl font-semibold">Моя коллекция</h2>
-        <div className="grid grid-cols-3 gap-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="aspect-[3/4] rounded-xl bg-slate-200" />
-          ))}
-        </div>
-
-        <h2 className="text-xl font-semibold mt-6">Призы</h2>
-        <div className="grid grid-cols-2 gap-3">
-          {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="h-24 rounded-xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-800">
-              Приз #{i + 1}
+      {/* Мои карточки */}
+      <h2 className="profile-subtitle">Мои карточки</h2>
+      {myCards === null ? (
+        <div className="muted">Загрузка…</div>
+      ) : myCards.length === 0 ? (
+        <div className="muted">Ты еще не активировал карточки :(</div>
+      ) : (
+        <div className="cards-grid mycards-grid">
+          {myCards.map((c) => (
+            <div key={c.code} className="mycard-tile">
+              <div className="mycard-name">
+                {c.card_type?.first_name} {c.card_type?.last_name}
+              </div>
+              <div className="mycard-code">{c.code}</div>
             </div>
           ))}
         </div>
-      </section>
+      )}
+
+      <div className="divider" />
+
+      {/* Мои призы */}
+      <h2 className="profile-subtitle">Мои призы</h2>
+      {myPrizes === null ? (
+        <div className="muted">Загрузка…</div>
+      ) : myPrizes.length === 0 ? (
+        <div className="muted">Ты еще не выиграл призы</div>
+      ) : (
+        <div className="prizes-list">
+          {myPrizes.map((p) => (
+            <div key={p.id} className="prize-item">
+              • {p.title}{p.count > 1 ? ` ×${p.count}` : ""}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
+
 
 function CollectionPage() {
   const [data, setData] = useState(null);
