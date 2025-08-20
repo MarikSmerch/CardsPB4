@@ -310,6 +310,8 @@ body {
   height: auto;
   border-radius: 0;
   flex-shrink: 0;
+  max-height: 72vh; 
+  object-fit: contain; 
 }
 
 .modal-info {
