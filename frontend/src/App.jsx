@@ -653,7 +653,7 @@ const CardsGrid = ({ items }) => {
         <div className="modal-root" onClick={() => setModal(null)}>
           <div className="modal-backdrop" />
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <img src={modal.img} alt={modal.name} className="modal-img" />
+            <img src={modal.img} alt={`${modal.first_name} ${modal.last_name}`} className="modal-img" />
 
             <div className="modal-info">
               {modal.description && (

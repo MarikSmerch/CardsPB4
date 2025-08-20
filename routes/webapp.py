@@ -127,7 +127,7 @@ def activate(payload: ActivateIn, db: Session = Depends(get_db)):
     )
 
 
-@router.post("/collections", response_model=list[CollectionWithCardsOut])
+@router.post("/collections", response_model=list[CollectionWithCardsOut], response_model_exclude_none=False,)
 def collections(payload: InitIn, db: Session = Depends(get_db)):
     user = verify_telegram_init_data(payload.initData, db)
 
