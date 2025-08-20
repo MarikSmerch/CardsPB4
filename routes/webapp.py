@@ -152,11 +152,12 @@ def collections(payload: InitIn, db: Session = Depends(get_db)):
                     Card.activated_by == user.id
                 ))
             ).scalar()
+            desc = (getattr(m, "description", None) or getattr(ct, "description", None) or "")
             items.append(CardTypeInCollectionOut(
                 id=ct.id,
                 first_name=ct.first_name,
                 last_name=ct.last_name,
-                description=getattr(ct, "description", None),
+                description=desc.strip(),
                 image_path=m.image_path,
                 collected=bool(collected),
             ))

@@ -561,7 +561,7 @@ function CollectionPage() {
         if (Date.now() - (parsed.ts || 0) < 5 * 60 * 1000) {
           // если в кэше вдруг нет description — принудительно перезагружаем
           const hasDesc = (parsed.payload || []).some(col =>
-            (col.items || []).some(it => typeof it.description === "string" && it.description.length > 0)
+            (col.items || []).some(it => 'description' in it)
           );
           if (hasDesc) {
             setData(parsed.payload);
