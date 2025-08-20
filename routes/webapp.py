@@ -153,16 +153,7 @@ def collections(payload: InitIn, db: Session = Depends(get_db)):
                 ))
             ).scalar()
 
-            raw_desc = db.scalar(
-                select(
-                    func.coalesce(
-                        func.nullif(func.trim(CardTypeInCollection.description), ''),
-                        func.nullif(func.trim(CardType.description), ''),
-                        literal_column("''")
-                    )
-                ).where(CardTypeInCollection.id == m.id)
-            )
-            desc = (raw_desc or "").strip()
+            desc = (ct.description or "").strip()
 
             items.append(CardTypeInCollectionOut(
                 id=ct.id,
