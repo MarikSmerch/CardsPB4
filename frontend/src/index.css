@@ -120,8 +120,6 @@ body {
    .full-bleed {
     width: 100svw;
     margin-left: calc(50% - 50svw);
-    width: 100svw;
-    margin-left: calc(50% - 50svw);
     margin-right: calc(50% - 50svw);
    }
  }
@@ -232,7 +230,10 @@ body {
   font-weight: 800;
   font-size: 18px;
   text-transform: lowercase;
-  white-space: nowrap;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.1;
+  padding: 0 6px;
 }
 .lined-row::before,
 .lined-row::after {
@@ -241,6 +242,12 @@ body {
   background: rgba(0,0,0,.25);
   flex: 1 1 auto;
   border-radius: 1px;
+}
+
+.lined-fullbleed {
+  width: 100dvw;
+  margin-left: calc(50% - 50dvw);
+  margin-right: calc(50% - 50dvw);
 }
 
 .sub-title {
@@ -271,20 +278,20 @@ body {
   border: none;
   background: transparent;
   cursor: pointer;
-  border-radius: 0;  
-  overflow: hidden;
+  border-radius: 0;
+  overflow: visible;
   aspect-ratio: 3 / 4;
-  box-shadow: 0 1px 4px rgba(0,0,0,.12);
+  box-shadow: none;
 }
 .card-thumb img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   display: block;
+  object-fit: contain;
 }
 
-.modal-card { border-radius: 14px; overflow: hidden; }
-.modal-img { display: block; width: 100%; height: auto; border-radius: 0; }
+.modal-root { position: fixed; inset: 0; z-index: 60; }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.55); }
 .modal-card {
   position: absolute; left: 50%; top: 8%;
   transform: translateX(-50%);
@@ -294,21 +301,4 @@ body {
   box-shadow: 0 10px 40px rgba(0,0,0,.35);
   background: #fff;
 }
-.modal-img { display: block; width: 100%; height: auto; }
-.modal-desc {
-  position: absolute; left: 50%; bottom: 10px;
-  transform: translateX(-50%);
-  max-width: calc(100% - 24px);
-  background: rgba(255,255,255,.9);
-  backdrop-filter: blur(4px);
-  border-radius: 999px;
-  padding: 10px 14px;
-  font-family: 'Unbounded', sans-serif;
-  font-weight: 800;
-  font-size: 12px;
-  text-align: center;
-  text-transform: lowercase;
-  color: #1E0028;
-  box-shadow: 0 4px 16px rgba(0,0,0,.2);
-}
-.modal-backdrop { background: rgba(0,0,0,.55); }
+.modal-img { display: block; width: 100%; height: auto; border-radius: 0; }

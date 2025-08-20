@@ -44,14 +44,11 @@ function splitTitle(title) {
 }
 
 function LinedTitle({ title }) {
-  const parts = splitTitle(title);
   return (
-    <div className="space-y-1">
-      {parts.map((p, i) => (
-        <div key={i} className="lined-row">
-          <div className="label">{p.toLowerCase()}</div>
-        </div>
-      ))}
+    <div className="lined-fullbleed">
+      <div className="lined-row">
+        <div className="label">{String(title || "").toLowerCase()}</div>
+      </div>
     </div>
   );
 }
