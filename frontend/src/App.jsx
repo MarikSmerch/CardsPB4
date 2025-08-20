@@ -33,6 +33,29 @@ function AnimatedHamburger({ isOpen, setIsOpen, size = 28, color = "#1E0028" }) 
   );
 }
 
+function splitTitle(title) {
+  const t = String(title || "");
+  if (t.length <= 22) return [t];
+  const mid = Math.floor(t.length / 2);
+  let idx = t.lastIndexOf(" ", mid);
+  if (idx < 10) idx = t.indexOf(" ", mid);
+  if (idx <= 0 || idx >= t.length - 3) return [t];
+  return [t.slice(0, idx).trim(), t.slice(idx + 1).trim()];
+}
+
+function LinedTitle({ title }) {
+  const parts = splitTitle(title);
+  return (
+    <div className="space-y-1">
+      {parts.map((p, i) => (
+        <div key={i} className="lined-row">
+          <div className="label">{p.toLowerCase()}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // --- API helpers ---
 async function apiSaveProfile({ first_name, last_name, vk_link }) {
   const tg = getTg();
@@ -609,7 +632,7 @@ function CollectionPage() {
 
         {digital.map((col) => (
           <div key={col.slug} className="section-block">
-            <div className="sub-title">{col.title.toLowerCase()}</div>
+            <LinedTitle title={col.title} />
             <CardsGrid items={col.items} />
           </div>
         ))}

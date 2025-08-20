@@ -190,7 +190,7 @@ body {
 }
 .avatar-md { width: 120px; height: 120px; }
 
-.page-container { padding-left: 0; padding-right: 0; }
+.page-container { padding-left: 16px; padding-right: 16px; }
 .content-wrap {
   max-width: 480px;
   margin-left: auto;
@@ -207,6 +207,7 @@ body {
   font-size: 28px;
   letter-spacing: .5px;
   text-transform: lowercase;
+  margin: 8px 0 18px;
 }
 
 .section { margin-top: 18px; }
@@ -214,10 +215,34 @@ body {
   font-family: 'Unbounded', sans-serif;
   font-weight: 900;
   font-size: 22px;
-  margin: 8px 0 10px;
+  margin: 8px 0 12px;
   text-transform: lowercase;
+  padding: 0 4px;
 }
-.section-block { margin: 22px 0 28px; }
+.section-block { margin: 22px 0 28px; padding: 0 4px; }
+
+.lined-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 12px;
+}
+.lined-row .label {
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+.lined-row::before,
+.lined-row::after {
+  content: "";
+  height: 2px;
+  background: rgba(0,0,0,.25);
+  flex: 1 1 auto;
+  border-radius: 1px;
+}
+
 .sub-title {
   font-family: 'Unbounded', sans-serif;
   font-weight: 800;
@@ -246,7 +271,7 @@ body {
   border: none;
   background: transparent;
   cursor: pointer;
-  border-radius: 10px;
+  border-radius: 0;  
   overflow: hidden;
   aspect-ratio: 3 / 4;
   box-shadow: 0 1px 4px rgba(0,0,0,.12);
@@ -258,8 +283,8 @@ body {
   display: block;
 }
 
-.modal-root { position: fixed; inset: 0; z-index: 60; }
-.modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.5); }
+.modal-card { border-radius: 14px; overflow: hidden; }
+.modal-img { display: block; width: 100%; height: auto; border-radius: 0; }
 .modal-card {
   position: absolute; left: 50%; top: 8%;
   transform: translateX(-50%);
@@ -286,3 +311,4 @@ body {
   color: #1E0028;
   box-shadow: 0 4px 16px rgba(0,0,0,.2);
 }
+.modal-backdrop { background: rgba(0,0,0,.55); }
