@@ -159,7 +159,7 @@ def collections(payload: InitIn, db: Session = Depends(get_db)):
                     Card.activated_by == user.id
                 ))
             ).scalar()
-
+            print("ct_id=", r.ct_id, "desc_len=", 0 if r.ct_desc is None else len(r.ct_desc or ""))
             items.append(CardTypeInCollectionOut(
                 id=r.ct_id,
                 first_name=r.fn,
