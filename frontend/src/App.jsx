@@ -591,7 +591,7 @@ function CollectionPage() {
   };
 
   const CardsGrid = ({ items }) => {
-    // items = items.filter(i => i.collected);
+    items = items.filter(i => i.collected);
     return (
       <div className="cards-grid">
         {items.map((it) => (

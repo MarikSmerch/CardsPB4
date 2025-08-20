@@ -293,12 +293,42 @@ body {
 .modal-root { position: fixed; inset: 0; z-index: 60; }
 .modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.55); }
 .modal-card {
-  position: absolute; left: 50%; top: 8%;
+  position: absolute; left: 50%; top: 6%;
   transform: translateX(-50%);
   width: min(92vw, 420px);
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0,0,0,.35);
   background: #fff;
+  display: flex;
+  flex-direction: column;
 }
-.modal-img { display: block; width: 100%; height: auto; border-radius: 0; }
+.modal-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+  flex-shrink: 0;
+}
+
+.modal-info {
+  background: #ECFCFF;
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.modal-name {
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 900;
+  font-size: 18px;
+  margin-bottom: 6px;
+  color: #1E0028;
+}
+
+.modal-extra {
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #333;
+}
