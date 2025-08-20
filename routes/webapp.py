@@ -130,7 +130,10 @@ def activate(payload: ActivateIn, db: Session = Depends(get_db)):
 @router.post("/collections", response_model=list[CollectionWithCardsOut])
 def collections(payload: InitIn, db: Session = Depends(get_db)):
     user = verify_telegram_init_data(payload.initData, db)
+
+    order = ["fiz", "osnova", "dizayn", "kopirayt", "kro", "orgi", "preds", "profkom", "spo", "sputnik"]
     cols = db.execute(select(Collection)).scalars().all()
+    cols.sort(key=lambda c: (order.index(c.slug) if c.slug in order else 999, c.id))
 
     result: list[CollectionWithCardsOut] = []
     for col in cols:
@@ -150,9 +153,15 @@ def collections(payload: InitIn, db: Session = Depends(get_db)):
                 ))
             ).scalar()
             items.append(CardTypeInCollectionOut(
-                id=ct.id, first_name=ct.first_name, last_name=ct.last_name,
-                image_path=m.image_path, collected=bool(collected)
+                id=ct.id,
+                first_name=ct.first_name,
+                last_name=ct.last_name,
+                description=getattr(ct, "description", None),
+                image_path=m.image_path,
+                collected=bool(collected),
             ))
+
+        items.sort(key=lambda x: (x.first_name.lower(), x.last_name.lower()))
 
         result.append(CollectionWithCardsOut(
             id=col.id, slug=col.slug, title=col.title, is_primary=col.is_primary, items=items

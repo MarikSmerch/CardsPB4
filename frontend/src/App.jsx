@@ -79,6 +79,18 @@ async function apiActivateCode(code, initData) {
   return res.json();
 }
 
+async function apiCollections() {
+  const tg = getTg();
+  const initData = tg?.initData || "";
+  const res = await fetch("/api/collections", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ initData }),
+  });
+  if (!res.ok) throw new Error("Collections fetch failed");
+  return res.json();
+}
+
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [page, setPage] = useState("home");
@@ -514,21 +526,115 @@ function ProfilePage({ user, onSaved }) {
 }
 
 function CollectionPage() {
-  return (
-    <div className="space-y-5">
-      <h1 className="text-2xl font-bold">Коллекции</h1>
-      <p className="text-slate-600">Здесь будут наборы карточек. Нажимай на коллекцию, чтобы открыть карточки.</p>
-      <div className="grid grid-cols-2 gap-3">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="rounded-2xl overflow-hidden shadow bg-white">
-            <div className="h-28 bg-slate-200" />
-            <div className="p-3 font-medium">Коллекция #{i + 1}</div>
-          </div>
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
+  const [modal, setModal] = useState(null); // {img, name, description}
+
+  // Кэш в sessionStorage
+  useEffect(() => {
+    const key = "collections_v1";
+    const cached = sessionStorage.getItem(key);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (Date.now() - (parsed.ts || 0) < 5 * 60 * 1000) { // TTL 5 минут
+          setData(parsed.payload);
+          setLoading(false);
+          return;
+        }
+      } catch {}
+    }
+
+    (async () => {
+      try {
+        const payload = await apiCollections();
+        setData(payload);
+        sessionStorage.setItem(key, JSON.stringify({ ts: Date.now(), payload }));
+      } catch (e) {
+        setErr(e.message || "Не удалось загрузить коллекции");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const fiz = useMemo(() => (data || []).find(c => c.slug === "fiz"), [data]);
+  const digital = useMemo(() => (data || []).filter(c => c.slug !== "fiz"), [data]);
+
+  const openModal = (item) => {
+    setModal({
+      img: item.image_path,
+      name: `${item.last_name?.toUpperCase() || ""} ${item.first_name || ""}`.trim(),
+      description: item.description || "",
+    });
+  };
+
+  const CardsGrid = ({ items }) => {
+    // items = items.filter(i => i.collected);
+    return (
+      <div className="cards-grid">
+        {items.map((it) => (
+          <button key={`${it.id}-${it.image_path}`} className="card-thumb" onClick={() => openModal(it)}>
+            <img
+              src={it.image_path}
+              alt={`${it.first_name} ${it.last_name}`}
+              loading="lazy"
+            />
+          </button>
         ))}
       </div>
+    );
+  };
+
+  if (loading) return <div className="animate-pulse">Загрузка…</div>;
+  if (err) return <div className="text-red-600">{err}</div>;
+  if (!data) return null;
+
+  return (
+    <div className="space-y-10">
+      <h1 className="title-h1">коллекция карточек</h1>
+
+      {/* Физические карточки */}
+      {fiz && (
+        <section className="section">
+          <h2 className="section-title">физические карточки</h2>
+          <CardsGrid items={fiz.items} />
+        </section>
+      )}
+
+      {/* Цифровые карточки */}
+      <section className="section">
+        <h2 className="section-title">цифровые карточки</h2>
+
+        {digital.map((col) => (
+          <div key={col.slug} className="section-block">
+            <div className="sub-title">{col.title.toLowerCase()}</div>
+            <CardsGrid items={col.items} />
+          </div>
+        ))}
+      </section>
+
+      {/* Модалка с зумом и описанием */}
+      {modal && (
+        <div className="modal-root" onClick={() => setModal(null)}>
+          <div className="modal-backdrop" />
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <img src={modal.img} alt={modal.name} className="modal-img" />
+            {modal.description ? (
+              <div className="modal-desc">
+                {modal.description.split("\n").map((line, i) => (
+                  <div key={i}>{line}</div>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
 
 function AboutPage() {
   return (

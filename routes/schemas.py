@@ -53,6 +53,7 @@ class CardTypeInCollectionOut(BaseModel):
     id: int
     first_name: str
     last_name: str
+    description: Optional[str] = None
     image_path: Optional[str]
     collected: bool
 
