@@ -685,13 +685,66 @@ const CardsGrid = ({ items }) => {
 
 
 function AboutPage() {
+  const images = useMemo(() => (
+    Array.from({ length: 9 }, (_, i) => `/karysel/${i + 1}.jpg`)
+  ), []);
+
+  const [idx, setIdx] = useState(0);
+  const clamp = (n) => (n + images.length) % images.length;
+
+  const goPrev = () => setIdx((i) => clamp(i - 1));
+  const goNext = () => setIdx((i) => clamp(i + 1));
+  const goTo   = (i) => setIdx(clamp(i));
+
+  const [touchX, setTouchX] = useState(null);
+  const onTouchStart = (e) => setTouchX(e.touches[0].clientX);
+  const onTouchEnd   = (e) => {
+    if (touchX == null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 40) (dx > 0 ? goPrev() : goNext());
+    setTouchX(null);
+  };
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setIdx((i) => clamp(i + 1));
+    }, 3000);
+    return () => clearInterval(id);
+  }, [images.length]);
+
   return (
-    <div className="space-y-5">
-      <h1 className="text-2xl font-bold">О нас</h1>
-      <div className="rounded-2xl overflow-hidden">
-        <div className="h-56 bg-slate-300" />
+    <div className="about-wrap">
+      <h1 className="about-title">О нас</h1>
+
+      <div
+        className="carousel"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        <div
+          className="carousel-track"
+          style={{ transform: `translateX(-${idx * 100}%)` }}
+        >
+          {images.map((src, i) => (
+            <div className="carousel-slide" key={src}>
+              <img src={src} alt={`Слайд ${i + 1}`} />
+            </div>
+          ))}
+        </div>
+
+        <button className="carousel-btn prev" onClick={goPrev}>‹</button>
+        <button className="carousel-btn next" onClick={goNext}>›</button>
+
+        <div className="carousel-dots">
+          {images.map((_, i) => (
+            <button
+              key={i}
+              className={`dot ${i === idx ? "active" : ""}`}
+              onClick={() => goTo(i)}
+            />
+          ))}
+        </div>
       </div>
-      <button className="px-4 py-3 rounded-2xl bg-slate-900 text-white">Кнопка действия</button>
     </div>
   );
 }
