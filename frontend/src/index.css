@@ -405,7 +405,6 @@ body {
   object-fit: cover;
 }
 
-/* Кнопки навигации */
 .carousel-btn {
   position: absolute; top: 50%;
   transform: translateY(-50%);
@@ -423,7 +422,6 @@ body {
 .carousel-btn.prev { left: 10px; }
 .carousel-btn.next { right: 10px; }
 
-/* Точки */
 .carousel-dots {
   position: absolute; left: 50%; bottom: 10px;
   transform: translateX(-50%);
@@ -443,4 +441,33 @@ body {
 .carousel-dots .dot.active {
   background: #fff;
   width: 18px; height: 8px; border-radius: 999px;
+}
+
+.about-text {
+  margin-top: 24px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--brand-text);
+}
+
+.about-text h3 {
+  font-weight: 800;
+  margin: 16px 0 8px;
+  font-size: 16px;
+}
+
+.about-text ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 8px 0 16px;
+}
+
+.about-text p {
+  margin: 12px 0;
+}
+
+.about-text a {
+  color: #0077cc;
+  text-decoration: underline;
 }

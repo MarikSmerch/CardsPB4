@@ -708,7 +708,7 @@ function AboutPage() {
   useEffect(() => {
     const id = setInterval(() => {
       setIdx((i) => clamp(i + 1));
-    }, 3000);
+    }, 5000);
     return () => clearInterval(id);
   }, [images.length]);
 
@@ -731,10 +731,8 @@ function AboutPage() {
             </div>
           ))}
         </div>
-
         <button className="carousel-btn prev" onClick={goPrev}>‹</button>
         <button className="carousel-btn next" onClick={goNext}>›</button>
-
         <div className="carousel-dots">
           {images.map((_, i) => (
             <button
@@ -744,6 +742,37 @@ function AboutPage() {
             />
           ))}
         </div>
+      </div>
+
+      <div className="about-text">
+        <p>
+          На связи самое балдёжное профбюро 4 института, и мы знаем,
+          как сделать твою студенческую жизнь максимально крутой и
+          запоминающейся!
+        </p>
+
+        <h3>Мы занимаемся:</h3>
+        <ul>
+          <li>Организацией крутых мероприятий (Мансарда, Профкарт, Академия Профорка)</li>
+          <li>Выездами в лес и коттеджи</li>
+          <li>Решением твоих вопросов, помощь в учёбе, защита прав, консультации по студенческим вопросам</li>
+        </ul>
+
+        <h3>С нами ты можешь:</h3>
+        <ul>
+          <li>Найти новых друзей и единомышленников</li>
+          <li>Получить нереальные эмоции</li>
+          <li>Стать частью дружной и активной команды</li>
+          <li>Просто круто провести время</li>
+        </ul>
+
+        <p>
+          Подписывайся на наши соцсети, чтобы не пропускать балдёжные тусовки!
+        </p>
+        <p>
+          тг: <a href="https://t.me/guap4you" target="_blank">@guap4you</a><br/>
+          вк: <a href="https://vk.com/guap4you" target="_blank">vk.com/guap4you</a>
+        </p>
       </div>
     </div>
   );
