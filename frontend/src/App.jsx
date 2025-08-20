@@ -553,15 +553,23 @@ function CollectionPage() {
 
   // Кэш в sessionStorage
   useEffect(() => {
-    const key = "collections_v1";
-    const cached = sessionStorage.getItem(key);
+    const CACHE_KEY = "collections_v2"; // ← новая версия кэша
+    const cached = sessionStorage.getItem(CACHE_KEY);
     if (cached) {
       try {
         const parsed = JSON.parse(cached);
-        if (Date.now() - (parsed.ts || 0) < 5 * 60 * 1000) { // TTL 5 минут
-          setData(parsed.payload);
-          setLoading(false);
-          return;
+        if (Date.now() - (parsed.ts || 0) < 5 * 60 * 1000) {
+          // если в кэше вдруг нет description — принудительно перезагружаем
+          const hasDesc = (parsed.payload || []).some(col =>
+            (col.items || []).some(it => typeof it.description === "string" && it.description.length > 0)
+          );
+          if (hasDesc) {
+            setData(parsed.payload);
+            setLoading(false);
+            return;
+          } else {
+            sessionStorage.removeItem(CACHE_KEY);
+          }
         }
       } catch {}
     }
@@ -570,7 +578,7 @@ function CollectionPage() {
       try {
         const payload = await apiCollections();
         setData(payload);
-        sessionStorage.setItem(key, JSON.stringify({ ts: Date.now(), payload }));
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), payload }));
       } catch (e) {
         setErr(e.message || "Не удалось загрузить коллекции");
       } finally {
