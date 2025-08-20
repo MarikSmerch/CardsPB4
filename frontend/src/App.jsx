@@ -585,17 +585,21 @@ function CollectionPage() {
   const openModal = (item) => {
     setModal({
       img: item.image_path,
-      name: `${item.last_name?.toUpperCase() || ""} ${item.first_name || ""}`.trim(),
+      first_name: item.first_name,
+      last_name: item.last_name,
       description: item.description || "",
     });
   };
 
-  const CardsGrid = ({ items }) => {
-    items = items.filter(i => i.collected);
+const CardsGrid = ({ items }) => {
     return (
       <div className="cards-grid">
         {items.map((it) => (
-          <button key={`${it.id}-${it.image_path}`} className="card-thumb" onClick={() => openModal(it)}>
+          <button
+            key={`${it.id}-${it.image_path}`}
+            className={`card-thumb ${!it.collected ? "inactive" : ""}`}
+            onClick={() => openModal(it)}
+          >
             <img
               src={it.image_path}
               alt={`${it.first_name} ${it.last_name}`}

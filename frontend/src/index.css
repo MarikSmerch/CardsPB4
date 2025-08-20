@@ -332,3 +332,8 @@ body {
   line-height: 1.4;
   color: #333;
 }
+
+.card-thumb.inactive img {
+  filter: grayscale(1) brightness(0.8);
+  opacity: 0.85;
+}
