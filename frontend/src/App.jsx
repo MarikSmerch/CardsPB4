@@ -659,18 +659,23 @@ const CardsGrid = ({ items }) => {
       {modal && (
         <div className="modal-root" onClick={() => setModal(null)}>
           <div className="modal-backdrop" />
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <img src={modal.img} alt={`${modal.first_name} ${modal.last_name}`} className="modal-img" />
 
-            <div className="modal-info">
-              {modal.description && (
-                <div className="modal-extra">
-                  {modal.description.split("\n").map((line, i) => (
-                    <div key={i}>{line}</div>
-                  ))}
-                </div>
-              )}
+          <div className="modal-wrapper" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-card">
+              <img
+                src={modal.img}
+                alt={`${modal.first_name} ${modal.last_name}`}
+                className="modal-img"
+              />
             </div>
+
+            {modal.description && (
+              <div className="modal-info-panel">
+                {modal.description.split("\n").map((line, i) => (
+                  <div key={i}>{line}</div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
