@@ -641,13 +641,19 @@ function CollectionPage() {
           <div className="modal-backdrop" />
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <img src={modal.img} alt={modal.name} className="modal-img" />
-            {modal.description ? (
-              <div className="modal-desc">
-                {modal.description.split("\n").map((line, i) => (
-                  <div key={i}>{line}</div>
-                ))}
+
+            <div className="modal-info">
+              <div className="modal-name">
+                {modal.last_name?.toUpperCase()} {modal.first_name}
               </div>
-            ) : null}
+              {modal.description && (
+                <div className="modal-extra">
+                  {modal.description.split("\n").map((line, i) => (
+                    <div key={i}>{line}</div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
