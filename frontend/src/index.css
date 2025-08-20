@@ -129,10 +129,6 @@ body {
   width: 100%;
   height: auto;
 }
-.full-bleed img.hero-logo {
-  padding: 0 12px 24px;
-  box-sizing: border-box;
-}
 
 .sidebar {
   position: fixed; left: 0; top: 0; bottom: 0;
@@ -474,4 +470,16 @@ body {
 .about-text a {
   color: #0077cc;
   text-decoration: underline;
+}
+
+.roadmap-wrap {
+  margin: 0 auto 24px;
+  padding: 0 12px;
+  max-width: 900px;
+}
+.roadmap-wrap img {
+  border-radius: 12px;
+  display: block;
+  width: 100%;
+  height: auto;
 }

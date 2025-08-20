@@ -786,7 +786,7 @@ function WherePage() {
       </h1>
 
       {/* Полноширинное изображение */}
-      <div className="full-bleed">
+      <div className="roadmap-wrap">
         <img className="hero-logo" src="/roadmap.png" alt="Карта мероприятий" />
       </div>
     </div>
