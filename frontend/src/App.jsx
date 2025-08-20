@@ -389,7 +389,7 @@ function HomePage({ user }) {
       <div className="full-bleed mt-2 mb-12">
         <img
           className="hero-logo"
-          src="/logo-baldezh.png"
+          src="/logo-baldezh.png?v=1"
           alt="Балдёжный Четвёртый"
         />
       </div>
@@ -452,7 +452,7 @@ function HomePage({ user }) {
 
             {/* Касатка */}
             <div className="flex justify-center home-orca">
-              <img src="/logo-orca.png" alt="Касатка" style={{ width: 110, height: "auto" }} />
+              <img src="/logo-orca.png?v=1" alt="Касатка" style={{ width: 110, height: "auto" }} />
             </div>
           </main>
         </div>
@@ -523,7 +523,7 @@ function ProfilePage({ user, onSaved }) {
       <div className="profile-header">
         <div className="avatar-lg">
           {user?.avatar_url ? (
-            <img src={user.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+            <img src={`${user.avatar_url}${user.avatar_url.includes('?') ? '&' : '?'}v=1`} alt="avatar" className="w-full h-full object-cover" />
           ) : <div className="avatar-placeholder" />}
         </div>
         <div className="profile-username">@{user?.username || "unknown"}</div>
@@ -688,7 +688,7 @@ const CardsGrid = ({ items }) => {
             onClick={() => openModal(it)}
           >
             <img
-              src={it.image_path}
+              src={`${it.image_path}${it.image_path.includes('?') ? '&' : '?'}v=1`}
               alt={`${it.first_name} ${it.last_name}`}
               loading="lazy"
             />
@@ -757,7 +757,7 @@ const CardsGrid = ({ items }) => {
 
 function AboutPage() {
   const images = useMemo(() => (
-    Array.from({ length: 9 }, (_, i) => `/karysel/${i + 1}.jpg`)
+    Array.from({ length: 9 }, (_, i) => `/karysel/${i + 1}.jpg?v=1`)
   ), []);
 
   const [idx, setIdx] = useState(0);
@@ -858,7 +858,7 @@ function WherePage() {
 
       {/* Полноширинное изображение */}
       <div className="roadmap-wrap">
-        <img className="hero-logo" src="/roadmap.png" alt="Карта мероприятий" />
+        <img className="hero-logo" src="/roadmap.png?v=1" alt="Карта мероприятий" />
       </div>
     </div>
   );

@@ -12,6 +12,14 @@
       href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;900&family=Inter:ital,wght@1,900&display=swap"
       rel="stylesheet"
     />
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/sw.js").catch(() => {});
+        });
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
