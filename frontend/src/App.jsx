@@ -647,9 +647,6 @@ const CardsGrid = ({ items }) => {
             <img src={modal.img} alt={modal.name} className="modal-img" />
 
             <div className="modal-info">
-              <div className="modal-name">
-                {modal.last_name?.toUpperCase()} {modal.first_name}
-              </div>
               {modal.description && (
                 <div className="modal-extra">
                   {modal.description.split("\n").map((line, i) => (
