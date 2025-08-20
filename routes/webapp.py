@@ -136,6 +136,7 @@ def collections(payload: InitIn, db: Session = Depends(get_db)):
     cols.sort(key=lambda c: (order.index(c.slug) if c.slug in order else 999, c.id))
 
     result: list[CollectionWithCardsOut] = []
+
     for col in cols:
         rows = db.execute(
             select(
@@ -154,7 +155,7 @@ def collections(payload: InitIn, db: Session = Depends(get_db)):
             collected = db.execute(
                 select(exists().where(
                     Card.card_type_id == r.ct_id,
-                    Card.is_activated == True,   # noqa: E712
+                    Card.is_activated == True,
                     Card.activated_by == user.id
                 ))
             ).scalar()
@@ -163,7 +164,7 @@ def collections(payload: InitIn, db: Session = Depends(get_db)):
                 id=r.ct_id,
                 first_name=r.fn,
                 last_name=r.ln,
-                description=r.ct_desc if r.ct_desc is not None else "",
+                description=(r.ct_desc if r.ct_desc is not None else ""),
                 image_path=r.img,
                 collected=bool(collected),
             ))
@@ -174,7 +175,6 @@ def collections(payload: InitIn, db: Session = Depends(get_db)):
         ))
 
     return result
-
 
 
 @router.post("/me/cards", response_model=list[CardBriefOut])
