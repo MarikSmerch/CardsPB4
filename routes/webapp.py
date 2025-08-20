@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select, exists, func
+from sqlalchemy import select, exists, func, literal_column
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 
@@ -127,7 +127,7 @@ def activate(payload: ActivateIn, db: Session = Depends(get_db)):
     )
 
 
-@router.post("/collections", response_model=list[CollectionWithCardsOut], response_model_exclude_none=False,)
+@router.post("/collections", response_model=list[CollectionWithCardsOut], response_model_exclude_none=False)
 def collections(payload: InitIn, db: Session = Depends(get_db)):
     user = verify_telegram_init_data(payload.initData, db)
 
@@ -148,16 +148,27 @@ def collections(payload: InitIn, db: Session = Depends(get_db)):
             collected = db.execute(
                 select(exists().where(
                     Card.card_type_id == ct.id,
-                    Card.is_activated == True,          # noqa: E712
+                    Card.is_activated == True,
                     Card.activated_by == user.id
                 ))
             ).scalar()
-            desc = (getattr(m, "description", None) or getattr(ct, "description", None) or "")
+
+            raw_desc = db.scalar(
+                select(
+                    func.coalesce(
+                        func.nullif(func.trim(CardTypeInCollection.description), ''),
+                        func.nullif(func.trim(CardType.description), ''),
+                        literal_column("''")
+                    )
+                ).where(CardTypeInCollection.id == m.id)
+            )
+            desc = (raw_desc or "").strip()
+
             items.append(CardTypeInCollectionOut(
                 id=ct.id,
                 first_name=ct.first_name,
                 last_name=ct.last_name,
-                description=desc.strip(),
+                description=desc,
                 image_path=m.image_path,
                 collected=bool(collected),
             ))
