@@ -591,6 +591,7 @@ function CollectionPage() {
   const digital = useMemo(() => (data || []).filter(c => c.slug !== "fiz"), [data]);
 
   const openModal = (item) => {
+    console.log("modal item:", item);
     setModal({
       img: item.image_path,
       first_name: item.first_name,
