@@ -388,7 +388,9 @@ function HomePage({ user, goTo }) {
       const ln = res?.card_type?.last_name ?? "";
       const prizeTitle = res?.prize?.title ?? null;
       const prizeDesc  = res?.prize?.description ?? null;
-      setSuccessModal({ first_name: fn, last_name: ln, prizeTitle, prizeDesc });
+      if (!res?.already_owned) {
+        setSuccessModal({ first_name: fn, last_name: ln, prizeTitle, prizeDesc });
+      }
     } catch (e) {
       setStatus({ type: "err", text: ensureMessage(e, "err") });
     } finally {
