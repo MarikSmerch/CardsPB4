@@ -478,7 +478,7 @@ function HomePage({ user, goTo }) {
                   ? (successModal.prizeDesc || "К сожалению, приза не было :(")
                   : (<>
                       <div className="font-unbounded-medium">Ты получил приз!</div>
-                      <div>{successModal.prizeDesc || ""}</div>
+                      <div>{successModal.prizeDesc || successModal.prizeTitle}</div>
                     </>)
                 }
               </div>
