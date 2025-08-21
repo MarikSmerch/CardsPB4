@@ -386,9 +386,9 @@ function HomePage({ user, goTo }) {
 
       const fn = res?.card_type?.first_name ?? "";
       const ln = res?.card_type?.last_name ?? "";
-      const prizeTitle = res?.prize?.title ?? "";
-      const isEmptyPrize = !res?.prize;
-      setSuccessModal({ first_name: fn, last_name: ln, prizeTitle, isEmptyPrize });
+      const prizeTitle = res?.prize?.title ?? null;
+      const prizeDesc  = res?.prize?.description ?? null;
+      setSuccessModal({ first_name: fn, last_name: ln, prizeTitle, prizeDesc });
     } catch (e) {
       setStatus({ type: "err", text: ensureMessage(e, "err") });
     } finally {
@@ -473,19 +473,20 @@ function HomePage({ user, goTo }) {
                 {successModal.first_name || ""}<br/>{successModal.last_name || ""}
               </div>
 
-              <div className="success-prize">
-                {successModal.isEmptyPrize
-                  ? "К сожалению, приза не было :("
-                  : <>Ты получил приз!<br/><b>{successModal.prizeTitle}</b></>}
+              <div className="success-prize-text">
+                {(!successModal.prizeTitle || successModal.prizeTitle?.toLowerCase() === "ничего")
+                  ? (successModal.prizeDesc || "К сожалению, приза не было :(")
+                  : (<>
+                      <div className="font-unbounded-medium">Ты получил приз!</div>
+                      <div>{successModal.prizeDesc || ""}</div>
+                    </>)
+                }
               </div>
 
               <div className="success-actions">
                 <button
-                  className="success-btn"
-                  onClick={() => {
-                    setSuccessModal(null);
-                    goTo?.("collection");
-                  }}
+                  className="success-btn secondary"
+                  onClick={() => { setSuccessModal(null); goTo?.("collection"); }}
                 >
                   в коллекции
                 </button>
