@@ -622,7 +622,12 @@ body {
 .muted { opacity: .7; }
 
 /* ==== Success Modal (home) ==== */
-.success-wrapper { top: 10%; width: min(92vw, 360px); }
+.success-wrapper {
+  top: 10%;
+  width: 90%;
+  max-width: 320px;
+  margin: 0 auto;
+}
 
 .success-card {
   background: #fff;
