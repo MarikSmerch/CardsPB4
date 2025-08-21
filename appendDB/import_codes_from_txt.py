@@ -11,7 +11,7 @@ if BASE_DIR not in sys.path:
 
 from bot.db import SessionLocal, engine
 from bot.db.models import Base, Card
-from prizes_seed import seed_prizes
+from prizes_seed import seed_prizes  # <-- фикс импорта
 
 # ====== НАСТРОЙКИ ======
 # Квоты:
@@ -28,29 +28,12 @@ DEFAULT_PRIZE = 0
 # Имя для мансарды:
 MANSARDA_PERSON = "Денис_К"
 
-# Маппинг кратких имён из файла → card_type_id (из твоей БД)
+# Маппинг кратких имён из файла → card_type_id
 NAME_TO_CARDTYPE = {
-    "Катя": 1,       # Екатерина Наймушина
-    "Лавр": 2,       # Лаврентий Харитонов
-    "Лена": 3,       # Елена Беляева
-    "Марк": 4,       # Марк Соколов
-    "Миша": 5,       # Михаил Ламбрехт
-    "Паша": 6,       # Павел Шихирин
-    "Полина": 7,     # Полина Шинкевич
-    "Профком": 8,    # Профком ГУАП
-    "Руфина": 9,     # Руфина Шарипова
-    "Соня": 10,      # Софья Комолова
-    "Артем": 11,     # Артём Ледовских
-    "Тим": 12,       # Тимофей Кошев
-    "Алеся": 13,     # Алеся Лопаткова
-    "Алла": 14,      # Алла Гончаренко
-    "Влад": 15,      # Владислав Горбунов
-    "Гоша": 16,      # Георгий Максимов
-    "Даня": 17,      # Данил Бычков
-    "Денис_К": 18,   # Денис Кольцов
-    "Дима": 19,      # Дмитрий Матвеев
-    "Илья": 20,      # Илья Полозков
-    "Денис_Ф": 21,   # Денис Федоров
+    "Катя": 1, "Лавр": 2, "Лена": 3, "Марк": 4, "Миша": 5, "Паша": 6, "Полина": 7,
+    "Профком": 8, "Руфина": 9, "Соня": 10, "Артем": 11, "Тим": 12, "Алеся": 13,
+    "Алла": 14, "Влад": 15, "Гоша": 16, "Даня": 17, "Денис_К": 18, "Дима": 19,
+    "Илья": 20, "Денис_Ф": 21,
 }
 
 LINE_RE = re.compile(r"^\s*(?P<name>[^-]+?)\s*--\s*(?P<code>[A-Z0-9-]{5,})\s*$")
@@ -75,47 +58,58 @@ def build_prize_pool():
         if pid == 6:
             continue  # мансарду не кладём в пул — именная
         pool.extend([pid] * qty)
-    random.shuffle(pool)
     return pool
 
 def main(path_to_txt, seed=42):
-    random.seed(seed)
-    # На случай чистой БД
+    rnd = random.Random(seed)
     Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()
     try:
-        # 1) Зальём справочник призов
+        # 1) Справочник призов
         seed_prizes(db)
 
-        # 2) Разберём входной файл
+        # 2) Разбор входного файла
         rows = parse_txt(path_to_txt)
         if not rows:
             print("Файл пуст или ничего не распознано.")
             return
 
-        # 3) Сгруппируем коды по человекy и найдём цель для мансарды
+        # 3) by_person и выбор мансардного кода
         by_person = {}
         for r in rows:
-            nm = r["name"]
-            by_person.setdefault(nm, []).append(r["code"])
+            by_person.setdefault(r["name"], []).append(r["code"])
 
         mansarda_code = None
         if MANSARDA_PERSON in by_person and by_person[MANSARDA_PERSON]:
-            mansarda_code = by_person[MANSARDA_PERSON][0]  # первый код Дениса_К
+            mansarda_code = by_person[MANSARDA_PERSON][0]  # один код у Денис_К под мансарду
         else:
-            print("ВНИМАНИЕ: в файле нет строк для 'Денис_К' — мансарда никому не выдана.")
+            print("ВНИМАНИЕ: нет строк для 'Денис_К' — мансарда никому не выдана.")
 
-        # 4) Подготовим пул призов
+        # 4) Готовим общий список всех кодов (кроме мансарды), перемешиваем и мапим на пул призов
         prize_pool = build_prize_pool()
-        pool_idx = 0
+        # Общий список всех кодов:
+        all_codes = []
+        for nm, codes in by_person.items():
+            for code in codes:
+                if mansarda_code and code == mansarda_code:
+                    continue
+                all_codes.append((nm, code))
+        rnd.shuffle(all_codes)  # <-- ключевой фикс: распределяем по всей совокупности, а не по первому человеку
 
-        # 5) Уже существующие коды в БД
+        # Возьмём только столько кодов, сколько призов в пуле, и создадим карту code->prize_id
+        rnd.shuffle(prize_pool)
+        code_to_prize = {}
+        for i in range(min(len(prize_pool), len(all_codes))):
+            _, code = all_codes[i]
+            code_to_prize[code] = prize_pool[i]
+
+        # 5) Уже существующие коды
         existing = {c for (c,) in db.query(Card.code).all()}
 
         inserted = skipped = 0
 
-        # 6) Идём по всем строкам и создаём Card
+        # 6) Создаём Card для каждого кода
         for nm, codes in by_person.items():
             card_type_id = NAME_TO_CARDTYPE.get(nm)
             if not card_type_id:
@@ -127,14 +121,10 @@ def main(path_to_txt, seed=42):
                     skipped += 1
                     continue
 
-                # Выбор приза
                 if mansarda_code and code == mansarda_code:
                     prize_id = 6
-                elif pool_idx < len(prize_pool):
-                    prize_id = prize_pool[pool_idx]
-                    pool_idx += 1
                 else:
-                    prize_id = DEFAULT_PRIZE
+                    prize_id = code_to_prize.get(code, DEFAULT_PRIZE)
 
                 db.add(Card(
                     code=code,
@@ -148,8 +138,8 @@ def main(path_to_txt, seed=42):
         print(f"Готово. Добавлено: {inserted}, пропущено (дубликаты): {skipped}.")
         if mansarda_code:
             print(f"«Мансарда» выдана коду: {mansarda_code} ({MANSARDA_PERSON})")
-        # Сводка по фактической раздаче (по желанию можно расширить)
-        used_non_default = min(pool_idx, len(prize_pool))
+        # Отладочная сводка
+        used_non_default = len(code_to_prize)
         print(f"Выдано призов по квотам (без 'ничего'): {used_non_default}; остальным — 0 (ничего).")
 
     finally:
