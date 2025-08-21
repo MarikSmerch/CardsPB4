@@ -3,26 +3,30 @@ from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from routes import webapp
 from contextlib import asynccontextmanager
+from starlette.routing import Route, WebSocketRoute, Mount
 from pathlib import Path
 import sys, os, uvicorn
 
 sys.path.append(os.path.dirname(__file__))
 
+BASE_DIR = Path(__file__).resolve().parent
+STATIC_DIR = BASE_DIR / "frontend"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("✅ Зарегистрированные маршруты:")
-    for route in app.routes:
-        print(f"{route.path} — {route.methods}")
+    for r in app.router.routes:
+        if isinstance(r, Route):
+            print(f"{r.path} — {r.methods}")
+        elif isinstance(r, WebSocketRoute):
+            print(f"{r.path} — WEBSOCKET")
+        elif isinstance(r, Mount):
+            print(f"{r.path} — MOUNT {getattr(r.app, '__class__', type(r.app)).__name__}")
     yield
-
-BASE_DIR = Path(__file__).resolve().parent
-STATIC_DIR = BASE_DIR / "frontend"
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(webapp.router, prefix="/api")
 app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="static")
-
 
 @app.middleware("http")
 async def cache_headers(request: Request, call_next):
