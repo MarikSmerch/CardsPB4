@@ -374,6 +374,7 @@ function HomePage({ user }) {
       if (!initData) throw new Error("Открой приложение внутри Telegram");
 
       const res = await apiActivateCode(code.trim(), initData);
+      try { sessionStorage.removeItem("collections_v3"); } catch {}
       setStatus({ type: "ok", text: ensureMessage(res?.message || "Готово", "ok") });
       setCode("");
     } catch (e) {
