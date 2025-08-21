@@ -3,6 +3,7 @@ from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from routes import webapp
 from contextlib import asynccontextmanager
+from pathlib import Path
 import sys
 import os
 import uvicorn
@@ -17,11 +18,12 @@ async def lifespan(app: FastAPI):
         print(f"{route.path} — {route.methods}")
     yield
 
+BASE_DIR = Path(__file__).resolve().parent
+STATIC_DIR = BASE_DIR / "static"
+
 app = FastAPI(lifespan=lifespan)
-
 app.include_router(webapp.router, prefix="/api")
-
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="static")
 
 
 @app.middleware("http")
@@ -37,4 +39,4 @@ async def cache_headers(request: Request, call_next):
     return response
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)

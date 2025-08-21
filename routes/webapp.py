@@ -208,7 +208,7 @@ def my_cards(payload: InitIn, db: Session = Depends(get_db)):
             card_type=CardTypeOut(
                 id=c.card_type.id, first_name=c.card_type.first_name, last_name=c.card_type.last_name
             ),
-            prize={"id": c.prize.id, "title": c.prize.title, "description": c.prize.description} if c.prize else None
+            prize=PrizeOut(id=c.prize.id, title=c.prize.title, description=c.prize.description) if c.prize else None
         ))
     return out
 
