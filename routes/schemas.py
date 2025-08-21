@@ -33,12 +33,18 @@ class ProfileOut(BaseModel):
     ban_until: Optional[str]
 
 
+class PrizeOut(BaseModel):
+    id: int
+    title: str
+    description: Optional[str] = None
+
+
 class ActivateOut(BaseModel):
     ok: bool
     message: str
     activated_at: Optional[str] = None
     already_owned: Optional[bool] = None
-    prize: Optional[dict] = None
+    prize: Optional[PrizeOut] = None
     card_type: Optional[dict] = None
 
 
@@ -82,4 +88,4 @@ class CardBriefOut(BaseModel):
     code: str
     activated_at: str
     card_type: CardTypeOut
-    prize: Optional[dict] = None
+    prize: Optional[PrizeOut] = None

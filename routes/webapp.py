@@ -10,7 +10,7 @@ from .schemas import (
     InitIn, ActivateIn, ActivateOut,
     ProfileOut, ProfileUpdateIn,
     CollectionWithCardsOut, CollectionBriefOut, CardTypeInCollectionOut,
-    CardBriefOut, CardTypeOut, PrizeCountOut
+    CardBriefOut, CardTypeOut, PrizeCountOut, PrizeOut
 )
 
 router = APIRouter()
@@ -76,10 +76,11 @@ def init(payload: InitIn, db: Session = Depends(get_db)):
     )
 
 
-@router.post("/activate", response_model=ActivateOut)
+@router.post("/activate", response_model=ActivateOut, response_model_exclude_none=False)
 def activate(payload: ActivateIn, db: Session = Depends(get_db)):
     user = verify_telegram_init_data(payload.initData, db)
     now = now_utc()
+    
 
     if user.ban_until and now < user.ban_until:
         remain = int((user.ban_until - now).total_seconds())
@@ -95,19 +96,22 @@ def activate(payload: ActivateIn, db: Session = Depends(get_db)):
         db.commit()
         raise HTTPException(status_code=400, detail="Неверный код")
 
+    prize = PrizeOut(
+        id=card.prize.id,
+        title=card.prize.title,
+        description=card.prize.description
+    ) if card.prize else None
+
     if card.is_activated:
         if card.activated_by == user.id:
             _clear_fail(user)
             db.add(user)
             db.commit()
             return ActivateOut(
-                ok=True, message="Код уже активирован вами",
+                ok=True, message="Код уже активирован",
                 activated_at=card.activated_at.isoformat() if card.activated_at else None,
                 already_owned=True,
-                prize=(
-                    {"id": card.prize.id, "title": card.prize.title, "description": card.prize.description}
-                    if card.prize else None
-                ),
+                prize=prize,
                 card_type={
                     "id": card.card_type.id,
                     "first_name": card.card_type.first_name,
@@ -127,12 +131,10 @@ def activate(payload: ActivateIn, db: Session = Depends(get_db)):
     db.commit()
 
     return ActivateOut(
-        ok=True, message="Код активирован",
+        ok=True,
+        message="Код активирован",
         activated_at=card.activated_at.isoformat(),
-        prize=(
-            {"id": card.prize.id, "title": card.prize.title, "description": card.prize.description}
-            if card.prize else None
-        ),
+        prize=prize,
         card_type={
             "id": card.card_type.id,
             "first_name": card.card_type.first_name,
