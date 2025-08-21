@@ -539,28 +539,31 @@ function ProfilePage({ user, onSaved }) {
     return () => { alive = false; };
   }, []);
 
-  const typeInfoById = React.useMemo(() => {
+  const fizCol = React.useMemo(
+    () => (collections || []).find(c => c.slug === "fiz"),
+    [collections]
+  );
+
+  const fizTypeInfoById = React.useMemo(() => {
     const map = new Map();
-    (collections || []).forEach(col => {
-      (col.items || []).forEach(it => {
-        const id = it.card_type_id ?? it.id ?? it.card_type?.id;
-        if (id != null) {
-          map.set(id, {
-            image_path: it.image_path,
-            description: typeof it.description === "string" ? it.description : "",
-            first_name: it.first_name,
-            last_name:  it.last_name,
-          });
-        }
-      });
+    (fizCol?.items || []).forEach(it => {
+      const id = it.card_type_id ?? it.id ?? it.card_type?.id;
+      if (id != null) {
+        map.set(id, {
+          image_path: it.image_path,
+          description: typeof it.description === "string" ? it.description : "",
+          first_name: it.first_name,
+          last_name:  it.last_name,
+        });
+      }
     });
     return map;
-  }, [collections]);
+  }, [fizCol]);
 
   const [pModal, setPModal] = React.useState(null); // {img, first_name, last_name, description, code}
 
   const openMyCardModal = (card) => {
-    const info = typeInfoById.get(card?.card_type?.id) || {};
+    const info = fizTypeInfoById.get(card?.card_type?.id) || {};
     setPModal({
       img: info.image_path,
       first_name: info.first_name ?? card?.card_type?.first_name ?? "",
@@ -639,7 +642,7 @@ function ProfilePage({ user, onSaved }) {
       ) : (
         <div className="cards-grid mycards-grid">
           {myCards.map((c) => {
-            const info = typeInfoById.get(c?.card_type?.id) || {};
+            const info = fizTypeInfoById.get(c?.card_type?.id) || {};
             const img = info.image_path;
             const title = `${info.first_name ?? c?.card_type?.first_name ?? ""} ${info.last_name ?? c?.card_type?.last_name ?? ""}`.trim();
             return img ? (
@@ -655,7 +658,6 @@ function ProfilePage({ user, onSaved }) {
                 />
               </button>
             ) : (
-              // Fallback, если вдруг нет картинки
               <div key={c.code} className="mycard-tile">
                 <div className="mycard-name">{title || "карточка"}</div>
                 <div className="mycard-code">{c.code}</div>
