@@ -4,9 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from routes import webapp
 from contextlib import asynccontextmanager
 from pathlib import Path
-import sys
-import os
-import uvicorn
+import sys, os, uvicorn
 
 sys.path.append(os.path.dirname(__file__))
 
@@ -19,7 +17,7 @@ async def lifespan(app: FastAPI):
     yield
 
 BASE_DIR = Path(__file__).resolve().parent
-STATIC_DIR = BASE_DIR / "static"
+STATIC_DIR = BASE_DIR / "frontend"
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(webapp.router, prefix="/api")
