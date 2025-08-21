@@ -174,7 +174,7 @@ export default function App() {
 
   const CurrentPage = useMemo(() => {
     switch (page) {
-      case "home":       return <HomePage user={user} />;
+      case "home":       return <HomePage user={user} goTo={(p) => setPage(p)} />;
       case "profile":    return <ProfilePage user={user} onSaved={setUser} />;
       case "collection": return <CollectionPage />;
       case "about":      return <AboutPage />;
@@ -328,24 +328,28 @@ export default function App() {
 }
 
 // ---------------- PAGES ----------------
-function HomePage({ user }) {
-  const [code, setCode] = useState("");
-  const [status, setStatus] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+function HomePage({ user, goTo }) {
+  const [code, setCode] = React.useState("");
+  const [status, setStatus] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+  const [submitted, setSubmitted] = React.useState(false);
+
+  // 👇 новое: состояние модалки после удачной активации
+  const [successModal, setSuccessModal] = React.useState(null);
+  // successModal = { first_name, last_name, prizeTitle, isEmptyPrize }
 
   const toMessage = (e) => {
     if (!e) return "Ошибка";
     if (typeof e === "string") return e;
     if (typeof e?.message === "string") return e.message;
     if (typeof e?.detail === "string") return e.detail;
-     try {
+    try {
       const s = JSON.stringify(e);
       return s && s !== "{}" ? s : "";
     } catch {
       return "";
     }
-};
+  };
   const ensureMessage = (val, type) => {
     const s = toMessage(val);
     if (!s || s === "[object Object]") {
@@ -354,7 +358,7 @@ function HomePage({ user }) {
     return s;
   };
 
- const onActivate = async () => {
+  const onActivate = async () => {
     if (!code.trim()) {
       setStatus({ type: "err", text: "Введите код" });
       setSubmitted(true);
@@ -374,9 +378,17 @@ function HomePage({ user }) {
       if (!initData) throw new Error("Открой приложение внутри Telegram");
 
       const res = await apiActivateCode(code.trim(), initData);
+
       try { sessionStorage.removeItem("collections_v3"); } catch {}
+
       setStatus({ type: "ok", text: ensureMessage(res?.message || "Готово", "ok") });
       setCode("");
+
+      const fn = res?.card_type?.first_name ?? "";
+      const ln = res?.card_type?.last_name ?? "";
+      const prizeTitle = res?.prize?.title ?? "";
+      const isEmptyPrize = !res?.prize;
+      setSuccessModal({ first_name: fn, last_name: ln, prizeTitle, isEmptyPrize });
     } catch (e) {
       setStatus({ type: "err", text: ensureMessage(e, "err") });
     } finally {
@@ -388,22 +400,14 @@ function HomePage({ user }) {
     <>
       {/* Логотип */}
       <div className="full-bleed mt-2 mb-12">
-        <img
-          className="hero-logo"
-          src="/logo-baldezh.png?v=1"
-          alt="Балдёжный Четвёртый"
-        />
+        <img className="hero-logo" src="/logo-baldezh.png?v=1" alt="Балдёжный Четвёртый" />
       </div>
+
       <div className="page-container">
         <div className="content-wrap">
           <main className="baldezh-card">
-            {/* Приветствие */}
-            <div className="font-unbounded-black leading-tight home-hello">
-              привет!
-            </div>
-            <div className="font-unbounded-black leading-tight home-subtitle">
-              введи код карточки:
-            </div>
+            <div className="font-unbounded-black leading-tight home-hello">привет!</div>
+            <div className="font-unbounded-black leading-tight home-subtitle">введи код карточки:</div>
 
             {/* Поле ввода */}
             <input
@@ -418,7 +422,7 @@ function HomePage({ user }) {
               maxLength={17}
             />
 
-            {/* Статус */}
+            {/* Статус под полем — остаётся */}
             {submitted && (status?.text ?? "") !== "" && (
               <div
                 className="status-inline"
@@ -429,11 +433,7 @@ function HomePage({ user }) {
             )}
 
             {/* Кнопка */}
-            <button
-              className="btn-primary font-unbounded-medium home-button"
-              onClick={onActivate}
-              disabled={loading}
-            >
+            <button className="btn-primary font-unbounded-medium home-button" onClick={onActivate} disabled={loading}>
               {loading ? "Ввод…" : "Ввод"}
             </button>
 
@@ -458,6 +458,45 @@ function HomePage({ user }) {
           </main>
         </div>
       </div>
+
+      {/* ✅ Модалка «ура!» */}
+      {successModal && (
+        <div className="modal-root" onClick={() => setSuccessModal(null)}>
+          <div className="modal-backdrop" />
+
+          <div className="modal-wrapper success-wrapper" onClick={(e) => e.stopPropagation()}>
+            <div className="success-card">
+              <div className="success-title font-unbounded-black">ура!</div>
+              <div className="success-sub">добавлена карточка:</div>
+
+              <div className="success-name font-unbounded-black">
+                {successModal.first_name || ""}<br/>{successModal.last_name || ""}
+              </div>
+
+              <div className="success-prize">
+                {successModal.isEmptyPrize
+                  ? "К сожалению, приза не было :("
+                  : <>Ты получил приз!<br/><b>{successModal.prizeTitle}</b></>}
+              </div>
+
+              <div className="success-actions">
+                <button
+                  className="success-btn"
+                  onClick={() => {
+                    setSuccessModal(null);
+                    goTo?.("collection");
+                  }}
+                >
+                  в коллекции
+                </button>
+                <button className="success-btn secondary" onClick={() => setSuccessModal(null)}>
+                  назад
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
