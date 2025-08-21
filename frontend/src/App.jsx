@@ -464,14 +464,13 @@ function HomePage({ user }) {
 
 
 function ProfilePage({ user, onSaved }) {
-  const [firstName, setFirstName] = useState(user?.first_name || "");
-  const [lastName,  setLastName]  = useState(user?.last_name  || "");
-  const [vk,        setVk]        = useState(user?.vk_link    || "");
-  const [saving,    setSaving]    = useState(false);
-  const [msg,       setMsg]       = useState(null); // {type:'ok'|'err', text:''}
+  const [firstName, setFirstName] = React.useState(user?.first_name || "");
+  const [lastName,  setLastName]  = React.useState(user?.last_name  || "");
+  const [vk,        setVk]        = React.useState(user?.vk_link    || "");
+  const [saving,    setSaving]    = React.useState(false);
+  const [msg,       setMsg]       = React.useState(null); // {type:'ok'|'err', text:''}
 
-  // данные пользователя могут обновиться извне
-  useEffect(() => {
+  React.useEffect(() => {
     setFirstName(user?.first_name || "");
     setLastName(user?.last_name || "");
     setVk(user?.vk_link || "");
@@ -496,10 +495,12 @@ function ProfilePage({ user, onSaved }) {
     }
   };
 
-  // --- мои карточки и призы ---
-  const [myCards, setMyCards] = useState(null);  // null=загрузка, []=пусто
-  const [myPrizes, setMyPrizes] = useState(null);
-  useEffect(() => {
+  const [myCards, setMyCards] = React.useState(null);
+  const [myPrizes, setMyPrizes] = React.useState(null);
+
+  const [collections, setCollections] = React.useState(null);
+
+  React.useEffect(() => {
     let alive = true;
     (async () => {
       try {
@@ -513,8 +514,61 @@ function ProfilePage({ user, onSaved }) {
         setMyPrizes([]);
       }
     })();
+
+    (async () => {
+      const CACHE_KEY = "collections_v3";
+      const cached = sessionStorage.getItem(CACHE_KEY);
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (Date.now() - (parsed.ts || 0) < 5 * 60 * 1000) {
+            setCollections(parsed.payload || []);
+            return;
+          }
+        } catch {}
+      }
+      try {
+        const payload = await apiCollections();
+        setCollections(payload || []);
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), payload }));
+      } catch {
+        setCollections([]);
+      }
+    })();
+
     return () => { alive = false; };
   }, []);
+
+  const typeInfoById = React.useMemo(() => {
+    const map = new Map();
+    (collections || []).forEach(col => {
+      (col.items || []).forEach(it => {
+        const id = it.card_type_id ?? it.id ?? it.card_type?.id;
+        if (id != null) {
+          map.set(id, {
+            image_path: it.image_path,
+            description: typeof it.description === "string" ? it.description : "",
+            first_name: it.first_name,
+            last_name:  it.last_name,
+          });
+        }
+      });
+    });
+    return map;
+  }, [collections]);
+
+  const [pModal, setPModal] = React.useState(null); // {img, first_name, last_name, description, code}
+
+  const openMyCardModal = (card) => {
+    const info = typeInfoById.get(card?.card_type?.id) || {};
+    setPModal({
+      img: info.image_path,
+      first_name: info.first_name ?? card?.card_type?.first_name ?? "",
+      last_name:  info.last_name  ?? card?.card_type?.last_name  ?? "",
+      description: info.description || "",
+      code: card?.code || "",
+    });
+  };
 
   return (
     <div className="profile-wrap">
@@ -584,14 +638,64 @@ function ProfilePage({ user, onSaved }) {
         <div className="muted">Ты еще не активировал карточки :(</div>
       ) : (
         <div className="cards-grid mycards-grid">
-          {myCards.map((c) => (
-            <div key={c.code} className="mycard-tile">
-              <div className="mycard-name">
-                {c.card_type?.first_name} {c.card_type?.last_name}
+          {myCards.map((c) => {
+            const info = typeInfoById.get(c?.card_type?.id) || {};
+            const img = info.image_path;
+            const title = `${info.first_name ?? c?.card_type?.first_name ?? ""} ${info.last_name ?? c?.card_type?.last_name ?? ""}`.trim();
+            return img ? (
+              <button
+                key={c.code}
+                className="card-thumb"
+                onClick={() => openMyCardModal(c)}
+              >
+                <img
+                  src={`${img}${img.includes('?') ? '&' : '?'}v=1`}
+                  alt={title || "карточка"}
+                  loading="lazy"
+                />
+              </button>
+            ) : (
+              // Fallback, если вдруг нет картинки
+              <div key={c.code} className="mycard-tile">
+                <div className="mycard-name">{title || "карточка"}</div>
+                <div className="mycard-code">{c.code}</div>
               </div>
-              <div className="mycard-code">{c.code}</div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Модалка для моих карточек */}
+      {pModal && (
+        <div className="modal-root" onClick={() => setPModal(null)}>
+          <div className="modal-backdrop" />
+          <div className="modal-wrapper" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-card">
+              {pModal.img ? (
+                <img
+                  src={pModal.img}
+                  alt={`${pModal.first_name} ${pModal.last_name}`}
+                  className="modal-img"
+                />
+              ) : (
+                <div className="modal-info" style={{ padding: 16 }}>
+                  нет изображения
+                </div>
+              )}
             </div>
-          ))}
+
+            <div className="modal-info-panel">
+              {/* описание или просто имя/фамилия */}
+              {pModal.description
+                ? pModal.description.split("\n").map((line, i) => <div key={i}>{line}</div>)
+                : <div><b>{pModal.first_name} {pModal.last_name}</b></div>}
+
+              {/* уникальный код */}
+              <div style={{ marginTop: 8, opacity: .85 }}>
+                <b>Уникальный код:</b> {pModal.code}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
