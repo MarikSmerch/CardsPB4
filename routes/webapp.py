@@ -104,8 +104,15 @@ def activate(payload: ActivateIn, db: Session = Depends(get_db)):
                 ok=True, message="Код уже активирован вами",
                 activated_at=card.activated_at.isoformat() if card.activated_at else None,
                 already_owned=True,
-                prize=({"id": card.prize.id, "title": card.prize.title, "description": card.prize.description} if card.prize else None),
-                card_type={"id": card.card_type.id, "first_name": card.card_type.first_name, "last_name": card.card_type.last_name}
+                prize=(
+                    {"id": card.prize.id, "title": card.prize.title, "description": card.prize.description}
+                    if card.prize else None
+                ),
+                card_type={
+                    "id": card.card_type.id,
+                    "first_name": card.card_type.first_name,
+                    "last_name": card.card_type.last_name
+                }
             )
         _register_fail(user, now)
         db.add(user)
@@ -122,8 +129,15 @@ def activate(payload: ActivateIn, db: Session = Depends(get_db)):
     return ActivateOut(
         ok=True, message="Код активирован",
         activated_at=card.activated_at.isoformat(),
-        prize=({"id": card.prize.id, "title": card.prize.title, "description": card.prize.description} if card.prize else None),
-        card_type={"id": card.card_type.id, "first_name": card.card_type.first_name, "last_name": card.card_type.last_name}
+        prize=(
+            {"id": card.prize.id, "title": card.prize.title, "description": card.prize.description}
+            if card.prize else None
+        ),
+        card_type={
+            "id": card.card_type.id,
+            "first_name": card.card_type.first_name,
+            "last_name": card.card_type.last_name
+        }
     )
 
 
@@ -192,7 +206,7 @@ def my_cards(payload: InitIn, db: Session = Depends(get_db)):
             card_type=CardTypeOut(
                 id=c.card_type.id, first_name=c.card_type.first_name, last_name=c.card_type.last_name
             ),
-            prize={"id": c.prize.id, "title": c.prize.title} if c.prize else None
+            prize={"id": c.prize.id, "title": c.prize.title, "description": c.prize.description} if c.prize else None
         ))
     return out
 
