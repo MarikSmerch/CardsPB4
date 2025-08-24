@@ -749,15 +749,17 @@ function ProfilePage({ user, onSaved }) {
       <h2 className="profile-subtitle">Мои призы</h2>
       {myPrizes === null ? (
         <div className="muted">Загрузка…</div>
-      ) : myPrizes.length === 0 ? (
+      ) : myPrizes.filter(p => p.title.toLowerCase() !== "ничего").length === 0 ? (
         <div className="muted">Ты еще не выиграл призы</div>
       ) : (
         <div className="prizes-list">
-          {myPrizes.map((p) => (
-            <div key={p.id} className="prize-item">
-              • {p.title}{p.count > 1 ? ` ×${p.count}` : ""}
-            </div>
-          ))}
+          {myPrizes
+            .filter(p => p.title.toLowerCase() !== "ничего")
+            .map((p) => (
+              <div key={p.id} className="prize-item">
+                • {p.title}{p.count > 1 ? ` ×${p.count}` : ""}
+              </div>
+            ))}
         </div>
       )}
     </div>
