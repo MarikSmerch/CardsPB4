@@ -56,8 +56,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     with open(photo_path, "rb") as photo:
         await context.bot.send_photo(
             chat_id=chat_id,
-            photo=photo,
-            caption="Балдёжный Четвёртый ✨"
+            photo=photo
         )
 
     await context.bot.send_message(
