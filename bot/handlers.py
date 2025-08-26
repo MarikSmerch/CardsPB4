@@ -48,7 +48,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "(кроме коллекций \"Председатель\" и \"Креативно-ревизионный отдел\")\n\n"
         "<b>5.</b> Физическая карточка должна оставаться у тебя в <b>целости и сохранности</b>, "
         "чтобы ты мог получить приз!\n\n"
-        "<i>Заходи в Mini-App по кнопке ниже и собери всех активистов! 😎</i>"
+        "<i>Заходи в Mini-App по кнопке ниже и собери всех активистов! 😎</i>\n\n"
+        "<i>Если возникла проблема с ботом или Mini-App'ом - пишите @MarkMarkSok 😊</i>"
     )
 
     photo_path = os.path.join(os.path.dirname(__file__), "..", "frontend", "public", "startpic.png")
