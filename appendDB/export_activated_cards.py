@@ -1,9 +1,7 @@
-# scripts/export_activated_cards.py
+# scripts/export_activated_cards_txt.py
 import os
 import sys
-import csv
 
-# ── sys.path, чтобы импортировать bot.db.*
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
@@ -11,7 +9,7 @@ if BASE_DIR not in sys.path:
 from bot.db import SessionLocal
 from bot.db.models import Card, CardType  # Card.is_activated, Card.code; CardType.first_name/last_name
 
-DEFAULT_OUT = os.path.join(BASE_DIR, "data", "activated_cards.csv")
+DEFAULT_OUT = os.path.join(BASE_DIR, "data", "activated_cards.txt")
 
 def export_activated_cards(output_path: str = DEFAULT_OUT) -> None:
     db = SessionLocal()
@@ -23,13 +21,11 @@ def export_activated_cards(output_path: str = DEFAULT_OUT) -> None:
             .order_by(CardType.last_name.asc(), CardType.first_name.asc(), Card.code.asc())
         )
 
-        rows = [(ct.first_name or "", ct.last_name or "", card.code or "") for card, ct in q.all()]
+        rows = [f"{ct.first_name} {ct.last_name} — {card.code}" for card, ct in q.all()]
 
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        with open(output_path, "w", newline="", encoding="utf-8") as f:
-            w = csv.writer(f)
-            w.writerow(["first_name", "last_name", "code"])
-            w.writerows(rows)
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(rows))
 
         print(f"OK: записано {len(rows)} строк в {output_path}")
     finally:
