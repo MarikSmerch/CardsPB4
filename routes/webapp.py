@@ -30,9 +30,10 @@ BAN_SEC = int(3600)
 
 # Настройки для аватарок
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-AVATAR_DIR = Path("static/avatars")
+BASE_DIR = Path(__file__).resolve().parent.parent
+AVATAR_DIR = BASE_DIR / "static" / "avatars"
 AVATAR_DIR.mkdir(parents=True, exist_ok=True)
-AVATAR_TTL = 24 * 3600
+AVATAR_TTL = 24*3600
 
 
 def now_utc():
@@ -79,38 +80,34 @@ def _local_avatar_path(tg_id: int) -> Path:
 
 
 def _is_local_avatar_fresh(path: Path) -> bool:
-    try:
-        return path.exists() and (time() - path.stat().st_mtime) < AVATAR_TTL
-    except Exception:
-        return False
+    return path.exists() and (time() - path.stat().st_mtime) < AVATAR_TTL
 
 
 def _download_telegram_avatar(tg_id: int) -> Optional[str]:
     if not BOT_TOKEN:
         return None
-
     try:
-        url = f"https://api.telegram.org/bot{BOT_TOKEN}/getUserProfilePhotos"
-        r = requests.get(url, params={"user_id": tg_id, "limit": 1}, timeout=10)
+        r = requests.get(
+            f"https://api.telegram.org/bot{BOT_TOKEN}/getUserProfilePhotos",
+            params={"user_id": tg_id, "limit": 1},
+            timeout=10
+        )
         r.raise_for_status()
-        j = r.json()
-        photos = j.get("result", {}).get("photos", [])
+        photos = r.json().get("result", {}).get("photos", [])
         if not photos:
             return None
         file_id = photos[0][-1]["file_id"]
-    except Exception:
-        return None
 
-    try:
-        r = requests.get(f"https://api.telegram.org/bot{BOT_TOKEN}/getFile", params={"file_id": file_id}, timeout=10)
+        r = requests.get(
+            f"https://api.telegram.org/bot{BOT_TOKEN}/getFile",
+            params={"file_id": file_id},
+            timeout=10
+        )
         r.raise_for_status()
         file_path = r.json().get("result", {}).get("file_path")
         if not file_path:
             return None
-    except Exception:
-        return None
 
-    try:
         file_url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file_path}"
         rr = requests.get(file_url, stream=True, timeout=20)
         rr.raise_for_status()
@@ -120,7 +117,9 @@ def _download_telegram_avatar(tg_id: int) -> Optional[str]:
                 if chunk:
                     f.write(chunk)
         return f"/static/avatars/{local.name}"
-    except Exception:
+
+    except Exception as e:
+        print("Ошибка при скачивании аватара:", e)
         return None
 
 
@@ -129,30 +128,25 @@ def init(payload: InitIn, db: Session = Depends(get_db)):
     user = verify_telegram_init_data(payload.initData, db)
 
     avatar_url: Optional[str] = None
-
-    if getattr(user, "avatar_url", None):
-        avatar_url = user.avatar_url
-
     tg_id = getattr(user, "id") or getattr(user, "telegram_id", None)
     if tg_id:
         local_p = _local_avatar_path(tg_id)
         if _is_local_avatar_fresh(local_p):
-            avatar_url = avatar_url or f"/static/avatars/{local_p.name}"
+            avatar_url = f"/static/avatars/{local_p.name}"
         else:
             downloaded = _download_telegram_avatar(tg_id)
             if downloaded:
                 avatar_url = downloaded
 
-    is_banned = bool(user.ban_until and now_utc() < user.ban_until)
     return ProfileOut(
         telegram_id=user.id,
         username=user.username,
         first_name=user.first_name,
         last_name=user.last_name,
-        vk_link=user.vk_link,
+        vk_link=getattr(user, "vk_link", None),
         avatar_url=avatar_url,
-        is_banned=is_banned,
-        ban_until=user.ban_until.isoformat() if user.ban_until else None
+        is_banned=False,
+        ban_until=None
     )
 
 

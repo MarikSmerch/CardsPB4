@@ -10,7 +10,9 @@ import sys, os, uvicorn
 sys.path.append(os.path.dirname(__file__))
 
 BASE_DIR = Path(__file__).resolve().parent
-STATIC_DIR = BASE_DIR / "frontend"
+FRONTEND_DIR = BASE_DIR / "frontend"
+STATIC_DIR = BASE_DIR / "static"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -26,7 +28,11 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(webapp.router, prefix="/api")
-app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="static")
+
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
+
 
 @app.middleware("http")
 async def cache_headers(request: Request, call_next):
