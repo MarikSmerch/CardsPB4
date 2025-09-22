@@ -52,16 +52,20 @@ def run():
                 if not fname.lower().endswith((".jpg", ".jpeg", ".png")):
                     continue
                 name = os.path.splitext(fname)[0].lower()
-                core = name.replace("kartochka", "")
-                if core.endswith(col_slug):
-                    core = core[: -len(col_slug)]
-                core = core.strip()
+                core = name.replace("kartochka", "").strip(" _-")
 
-                person = FILE_TO_PERSON.get(core)
-                if not person:
-                    print(f"[SKIP] {col_slug}/{fname} → нет в словаре")
-                    skipped += 1
-                    continue
+                candidates = [core, name]
+
+                if core.endswith(col_slug):
+                    without = core[: -len(col_slug)].strip(" _-")
+                    if without:
+                        candidates.insert(0, without)
+
+                person = None
+                for key in candidates:
+                    person = FILE_TO_PERSON.get(key)
+                    if person:
+                        break
 
                 first, last = person
                 ct = db.execute(
