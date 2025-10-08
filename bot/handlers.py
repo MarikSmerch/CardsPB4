@@ -21,12 +21,50 @@ async def get_avatar_url(user_id, context):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
-    avatar_url = await get_avatar_url(user.id, context)
+    chat_id = update.effective_chat.id
 
+    avatar_url = await get_avatar_url(user.id, context)
     rq.add_user(user.id, user.username, avatar_url)
 
     keyboard = InlineKeyboardMarkup([
         [InlineKeyboardButton("Открыть Web App", web_app=WebAppInfo(url="https://cardspb4.ru"))]
     ])
-    await update.message.reply_text("Нажми кнопку, чтобы открыть приложение:", reply_markup=keyboard)
+
+    text = (
+        "Привет! На связи <b>Балдёжный Четвёртый ✨</b>\n\n"
+        "Мы запустили крутой ивент – <b>\"Карточки активистов\"</b>, "
+        "который позволит тебе узнать всех активистов <b>балдёжного профбюро</b>, "
+        "а также выиграть крутые призы!\n\n"
+        "<i>Что нужно делать?</i>\n\n"
+        "<b>1.</b> Собирай карточки активистов <i>на мероприятиях Профбюро 4 института</i>\n"
+        "(В разделе \"Где получить?\" ты увидишь все места, где возможно их собрать)\n\n"
+        "<b>2.</b> После входа в Mini-App введи <b>уникальный код</b>, написанный на обратной стороне твоей карточки!\n\n"
+        "🔹Каждая карточка уникальна, и после ввода кода она останется только у тебя в профиле\n"
+        "🔹Некоторые карточки после их активации дают маленький приз (тут всё зависит от везения😊)\n\n"
+        "<b>3.</b> В разделе \"Коллекция\" ты можешь просмотреть всех открытых активистов, "
+        "а также тех, кого тебе ещё предстоит собрать😉\n\n"
+        "<b>4.</b> Для получения 🎁<b>САМОГО БАЛДЁЖНОГО</b>🎁 приза от актива нашего профбюро "
+        "ты должен собрать <b>все карточки одной коллекции</b> "
+        "(кроме коллекций \"Председатель\" и \"Креативно-ревизионный отдел\")\n\n"
+        "<b>5.</b> Физическая карточка должна оставаться у тебя в <b>целости и сохранности</b>, "
+        "чтобы ты мог получить приз!\n\n"
+        "<i>Заходи в Mini-App по кнопке ниже и собери всех активистов! 😎</i>\n\n"
+        "<i>Если возникла проблема с ботом или Mini-App'ом - пишите @MarkMarkSok 😊</i>"
+    )
+
+    photo_path = os.path.join(os.path.dirname(__file__), "..", "frontend", "public", "startpic.png")
+
+    with open(photo_path, "rb") as photo:
+        await context.bot.send_photo(
+            chat_id=chat_id,
+            photo=photo
+        )
+
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text=text,
+        parse_mode="HTML",
+        reply_markup=keyboard,
+        disable_web_page_preview=True
+    )
 

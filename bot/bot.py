@@ -1,10 +1,10 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo, Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-from bot.db import create_all_tables
+from .db import create_all_tables
 from dotenv import load_dotenv
 import os
 
-from bot.handlers import start
+from .handlers import start
 
 load_dotenv()
 
