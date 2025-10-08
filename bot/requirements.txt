@@ -1,0 +1,6 @@
+sqlalchemy
+psycopg2-binary
+python-telegram-bot
+python-dotenv
+fastapi
+pytelegrambotapi

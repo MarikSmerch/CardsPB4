@@ -1,0 +1,4 @@
+./start.sh start
+./start.sh stop
+./start.sh restart
+./start.sh status
