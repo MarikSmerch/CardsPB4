@@ -5,6 +5,12 @@ from sqlalchemy.orm import sessionmaker
 from bot.db.models import User, Card, CardType
 from bot.db import engine
 
+import sys
+import os
+
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 # Настройте URL вашей БД
 
 Session = sessionmaker(bind=engine)
